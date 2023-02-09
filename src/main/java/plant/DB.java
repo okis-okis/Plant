@@ -182,8 +182,8 @@ public class DB {
 		result[21][0] = "BunkersFilling edit";
 		result[22][0] = "Stacks view";
 		result[23][0] = "Stacks edit";
-		result[24][0] = "MaterailComposition view";
-		result[25][0] = "MaterailComposition edit";
+		result[24][0] = "MaterialComposition view";
+		result[25][0] = "MaterialComposition edit";
 		
 		for(int i=0;i<26;i++) {
 			if(privil[i].equals("0")) {

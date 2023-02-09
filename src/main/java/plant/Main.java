@@ -19,13 +19,11 @@ public class Main extends Application {
 	
 	private static ManagementController managementController;
 	
-	private static Stage stage;
+	private static Stage authorizationStage, complexStage;
 	
 	private static HelpFrames help;
 	
 	private static ComplexController complex;
-	
-	private static AuthorizationController authorization;
 	
 	@Override
 	public void start(Stage primaryStage) {	
@@ -40,10 +38,8 @@ public class Main extends Application {
 			System.exit(1);
 		}
 		//f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));		
-		authorization = new AuthorizationController();
-		help = new HelpFrames();
-		//complex = new ComplexController();
-		//complex.init();
+				
+		new AuthorizationController().init();
 	}
 	
 	public static void main(String[] args) {		
@@ -74,28 +70,28 @@ public class Main extends Application {
 	public static ManagementController getManagementController() {
 		return managementController;
 	}
-	
-	public static void setStage(Stage s) {
-		stage = s;
+
+	public static Stage getAuthorizationStage() {
+		return authorizationStage;
 	}
-	
-	public static Stage getStage() {
-		return stage;
+
+	public static void setAuthorizationStage(Stage authorizationStage) {
+		Main.authorizationStage = authorizationStage;
 	}
-	
-	public static HelpFrames getHelpFrames() {
-		return help;
-	}
-	
+
 	public static ComplexController getComplexController() {
 		return complex;
 	}
 
-	public static AuthorizationController getAuthorizationController() {
-		return authorization;
+	public static void setComplexController(ComplexController complex) {
+		Main.complex = complex;
 	}
 
-	public static void setAuthorizationController(AuthorizationController authorization) {
-		Main.authorization = authorization;
+	public static Stage getComplexStage() {
+		return complexStage;
+	}
+
+	public static void setComplexStage(Stage complexStage) {
+		Main.complexStage = complexStage;
 	}
 }

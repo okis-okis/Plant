@@ -1,5 +1,6 @@
 package plant.controllers;
 
+import java.io.IOException;
 import java.net.URL;
 
 import javafx.event.ActionEvent;
@@ -19,7 +20,7 @@ public class AuthorizationController {
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
-	
+
 	@FXML
 	TextField loginField;
 	
@@ -29,24 +30,24 @@ public class AuthorizationController {
 	@FXML
 	Label errorMessage;
 	
-	public AuthorizationController() {
+	public void init(){		
+		URL authorizationFXML 	= getClass().getResource("/fxml/authorization.fxml");
 		try {
-			URL authorizationFXML 	= getClass().getResource("/fxml/authorization.fxml");
-			
 			root = FXMLLoader.load(authorizationFXML);
+			scene = new Scene(root);
+				
+			stage = new Stage();
 			
-		    scene = new Scene(root);
-		    
-		    Main.setStage(new Stage());
-		    Main.getStage().setScene(scene);
-		    Main.getStage().setMaximized(false);
-		    Main.getStage().setMaxHeight(375);
-		    Main.getStage().setMaxWidth(370);
-		    Main.getStage().setMinHeight(375);
-		    Main.getStage().setMinWidth(370);
-			Main.getStage().show();
-		} catch(Exception e) {
-			e.printStackTrace();
+			stage.setScene(scene);
+			stage.setMaximized(false);
+			stage.setMaxHeight(375);
+			stage.setMaxWidth(370);
+			stage.setMinHeight(375);
+			stage.setMinWidth(370);
+			stage.show();
+			Main.setAuthorizationStage(stage);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -70,7 +71,10 @@ public class AuthorizationController {
 			
 			Main.setUser(user);
 			Main.setManagementController(new ManagementController());
-			Main.getStage().close();
+			Main.getAuthorizationStage().hide();
+			
+			Main.setComplexController(new ComplexController());
+			Main.getComplexController().init();
 		}
     }
 }

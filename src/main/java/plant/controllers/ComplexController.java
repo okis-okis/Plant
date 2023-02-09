@@ -2,6 +2,7 @@ package plant.controllers;
 
 import java.net.URL;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,26 +15,35 @@ public class ComplexController {
 	private Parent root;
 	
 	public void init() {
-		try {
-			URL complexFXML 	= getClass().getResource("/fxml/complex.fxml");
-			
-			root = FXMLLoader.load(complexFXML);
-			
-		    scene = new Scene(root);
-		    
-		    Main.setStage(new Stage());
-		    Main.getStage().setScene(scene);
-		    Main.getStage().setMaximized(true);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		//Platform.setImplicitExit(false);
+//		Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+			try {
+				URL complexFXML = getClass().getResource("/fxml/complex.fxml");
+				
+				root = FXMLLoader.load(complexFXML);
+				
+			    scene = new Scene(root);
+			    stage = new Stage();
+			    stage.setScene(scene);
+			    stage.setMaximized(true);
+			    //Main.setComplexStage(stage);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+//		}});
 	}
 	
 	public void show() {
-		Main.getStage().show();
+		if(stage!=null) {
+			stage.show();
+		}
 	}
 	
 	public void hide() {
-		Main.getStage().hide();
+		if(stage!=null) {
+			stage.hide();
+		}
 	}
 }

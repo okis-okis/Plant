@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -13,11 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.lang.reflect.Constructor;
-import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,18 +28,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 
-import javafx.embed.swing.SwingNode;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
+import javafx.application.Platform;
 import plant.IFrame;
 import plant.Main;
 import plant.lib.CustomComboBox;
-import plant.lib.Internet;
 import plant.reports.ReportStacks;
 import plant.reports.ReportVans;
 import plant.reports.ReportWorkers;
-
 
 public class ManagementController {
 	
@@ -59,8 +52,7 @@ public class ManagementController {
 	 */
 	private JDesktopPane desktop;
 	
-	public ManagementController() {
-		
+	public ManagementController() {	
 //		BorderPane borderPane = new BorderPane();
 //		
 //		SwingNode menuBar = new SwingNode();
@@ -91,33 +83,31 @@ public class ManagementController {
 //		stage.setMaximized(true);
 //		stage.show();
 		
-		SwingUtilities.invokeLater(() -> {
-			//Init main frame
-			mainFrame = new JFrame("СУБД фиксации обработки сырья для металлургического комбината");
+		//Init main frame
+		mainFrame = new JFrame("СУБД фиксации обработки сырья для металлургического комбината");
 							
-			//Add to close program event operation for close database connection
-			mainFrame.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					Main.getDB().closeConnection();
-			        // Terminate the program after the close button is clicked.
-					System.exit(0);
-				}
-			});
-							
-			//Add new components of interface
-			mainFrame.setJMenuBar(initializationMenu());
-							
-			mainFrame.setContentPane(initializationContent());
-					
-			mainFrame.setSize(700, 400);
-			// this method display the JFrame to center position of a screen
-			mainFrame.setLocationRelativeTo(null); 
-							
-			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-							
-			mainFrame.setVisible(true);
+		//Add to close program event operation for close database connection
+		mainFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Main.getDB().closeConnection();
+		        // Terminate the program after the close button is clicked.
+				System.exit(0);
+			}
 		});
+							
+		//Add new components of interface
+		mainFrame.setJMenuBar(initializationMenu());
+							
+		mainFrame.setContentPane(initializationContent());
+					
+		mainFrame.setSize(700, 400);
+		// this method display the JFrame to center position of a screen
+		mainFrame.setLocationRelativeTo(null); 
+							
+		mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+							
+		mainFrame.setVisible(true);
 	}
 	
 	/**
@@ -652,10 +642,18 @@ public class ManagementController {
 	public ActionListener getDocActionListener() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				//Main.getHelpFrames().docWindow();
-				Main.getComplexController().show();
+				Platform.setImplicitExit(false);
+				System.out.println("Click doc");
+				openComplexWindow();
 		    }
 		};
+	}
+	
+	private void openComplexWindow() {
+		Platform.runLater(new Runnable() { public void run() {
+			System.out.println("Show complex frame");
+			Main.getComplexController().show(); 
+		}});
 	}
 	
 	protected ActionListener getAboutActionListener() {

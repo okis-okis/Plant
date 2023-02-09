@@ -1,0 +1,7 @@
+#imagePanel{
+	-fx-background-image: url("Структура.JPG");
+	-fx-bacgkround-position: center;
+	-fx-bacgkround-size: 100% 100%;
+	-fx-background-size: contain;
+	-fx-background-repeat: no-repeat;
+}

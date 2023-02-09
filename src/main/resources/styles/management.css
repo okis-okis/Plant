@@ -1,0 +1,10 @@
+.menu, .menu-item{
+	-fx-font-size: 14;
+}
+
+.menu:hover, .menu:showing, .menu:focused, 
+.menu-item:hover, .menu-item:showing, .menu-item:focused{
+	-fx-background-color: #00b90c;
+	-fx-text-fill: white;
+}
+

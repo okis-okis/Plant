@@ -1,0 +1,36 @@
+.root{
+	-fx-font-family: sans-serif;
+}
+
+#mainFrame{
+}
+
+#loginLabel{
+	-fx-text-fill: black;
+	-fx-font-size: 32px;
+	-fx-font-weight: bold;
+	-fx-border-color: #00b90c;
+	-fx-border-style: hidden hidden solid hidden;
+	-fx-border-width: 2;
+}
+
+#loginField, #passwordField{
+	-fx-background-color: transparent;
+	-fx-border-color: #00b90c;
+	-fx-border-style: hidden hidden solid hidden;
+	-fx-border-width: 2;
+	-fx-font-size: 16px;
+	-fx-text-fill: black;
+}
+
+#loginButton{
+	-fx-background-color: #00b90c;
+	-fx-text-fill: white;
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-background-radius: 25px;
+}
+
+#loginButton:hover{
+	-fx-background-color: #009A0A;
+}

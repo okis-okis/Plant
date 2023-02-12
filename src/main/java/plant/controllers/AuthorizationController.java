@@ -72,9 +72,6 @@ public class AuthorizationController {
 			Main.setUser(user);
 			Main.setManagementController(new ManagementController());
 			Main.getAuthorizationStage().hide();
-			
-			Main.setComplexController(new ComplexController());
-			Main.getComplexController().init();
 		}
     }
 }

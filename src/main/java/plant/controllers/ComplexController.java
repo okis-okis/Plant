@@ -1,83 +1,62 @@
 package plant.controllers;
 
 import java.net.URL;
+import java.util.Random;
+import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 
-public class ComplexController {
+public class ComplexController implements Initializable{
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
 	
 	@FXML AreaChart areachart;
-	
-	public void init() {
-		//Platform.setImplicitExit(false);
-//		Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-		try {
-			URL complexFXML = getClass().getResource("/fxml/complex.fxml");
-			
-			root = FXMLLoader.load(complexFXML);
-			
-		    scene = new Scene(root);
-		    stage = new Stage();
-		    
-//	        final NumberAxis xAxis = new NumberAxis(256, 16384, 2016);
-//	        final NumberAxis yAxis = new NumberAxis();
-//	        final AreaChart<Number,Number> areachart = new AreaChart<Number,Number>(xAxis,yAxis);
-	        
-	        stage.setTitle("Управление комплексом");
-		    stage.setScene(scene);
-		    stage.setMaximized(true);
-		    stage.show();
-		    
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+	@FXML PieChart piechart;
 	
 	public void update(ActionEvent event) {
 		System.out.println("Click");
-		
-		XYChart.Series seriesApril= new XYChart.Series();
-        seriesApril.setName("April");
-        seriesApril.getData().add(new XYChart.Data(1, 4));
-        seriesApril.getData().add(new XYChart.Data(3, 10));
-        seriesApril.getData().add(new XYChart.Data(6, 15));
-        seriesApril.getData().add(new XYChart.Data(9, 8));
-        seriesApril.getData().add(new XYChart.Data(12, 5));
-        seriesApril.getData().add(new XYChart.Data(15, 18));
-        seriesApril.getData().add(new XYChart.Data(18, 15));
-        seriesApril.getData().add(new XYChart.Data(21, 13));
-        seriesApril.getData().add(new XYChart.Data(24, 19));
-        seriesApril.getData().add(new XYChart.Data(27, 21));
-        seriesApril.getData().add(new XYChart.Data(30, 21));
-        
-        XYChart.Series seriesMay = new XYChart.Series();
-        seriesMay.setName("May");
-        seriesMay.getData().add(new XYChart.Data(1, 20));
-        seriesMay.getData().add(new XYChart.Data(3, 15));
-        seriesMay.getData().add(new XYChart.Data(6, 13));
-        seriesMay.getData().add(new XYChart.Data(9, 12));
-        seriesMay.getData().add(new XYChart.Data(12, 14));
-        seriesMay.getData().add(new XYChart.Data(15, 18));
-        seriesMay.getData().add(new XYChart.Data(18, 25));
-        seriesMay.getData().add(new XYChart.Data(21, 25));
-        seriesMay.getData().add(new XYChart.Data(24, 23));
-        seriesMay.getData().add(new XYChart.Data(27, 26));
-        seriesMay.getData().add(new XYChart.Data(31, 26));
-        
-		areachart.setTitle("Распределение веществ по энергетическим уровням");
-        areachart.getData().addAll(seriesApril, seriesMay);
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		    XYChart.Series seriesApril= new XYChart.Series();
+	        seriesApril.setName("Лаборатория");
+	        seriesApril.getData().add(new XYChart.Data(1, 7000));
+	        seriesApril.getData().add(new XYChart.Data(1500, 7500));
+	        seriesApril.getData().add(new XYChart.Data(3000, 3700));
+	        seriesApril.getData().add(new XYChart.Data(4500, 4000));
+	        seriesApril.getData().add(new XYChart.Data(6000, 4156));
+	        seriesApril.getData().add(new XYChart.Data(7500, 1245));
+	        seriesApril.getData().add(new XYChart.Data(9000, 1256));
+	        seriesApril.getData().add(new XYChart.Data(10500, 6500));
+	        
+	        XYChart.Series seriesMay = new XYChart.Series();
+	        seriesMay.setName("Реальное значение");
+	        Random rand = new Random();
+	        for(int i=0;i<11000;i+=200) {
+	        	seriesMay.getData().add(new XYChart.Data(i, rand.nextInt(16000)));
+	        }
+	        
+			areachart.setTitle("Распределение веществ по энергетическим уровням");
+	        areachart.getData().addAll(seriesApril, seriesMay);
+	        
+	        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList( 
+	        		   new PieChart.Data("Норма", 83), 
+	        		   new PieChart.Data("Ошибка", 17));
+	        piechart.setData(pieChartData);
+	        
+	        pieChartData.get(0).getNode().setStyle("-fx-pie-color: green");
+	        pieChartData.get(1).getNode().setStyle("-fx-pie-color: red");
 	}
 }

@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,13 +32,15 @@ import javax.swing.JViewport;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import plant.IFrame;
 import plant.Main;
 import plant.lib.CustomComboBox;
@@ -547,7 +550,22 @@ public class ManagementController {
 			complex.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
 			    @Override
 			    public void handle(javafx.event.ActionEvent event) {
-			    	(new ComplexController()).init();
+			    	//(new ComplexController()).init();
+			    	try {
+						URL complexFXML = getClass().getResource("/fxml/complex.fxml");
+						
+						Parent root = FXMLLoader.load(complexFXML);
+						
+					    Scene scene = new Scene(root);
+					    Stage stage = new Stage();
+					    
+					    stage.setTitle("Управление комплексом");
+					    stage.setScene(scene);
+					    stage.setMaximized(true);
+					    stage.show();
+			    	} catch(Exception e) {
+						e.printStackTrace();
+					}
 			    }
 			});
 			complex.setTooltip(new Tooltip("Открыть окно управления комплексом"));

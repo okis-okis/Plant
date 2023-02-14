@@ -40,6 +40,7 @@ public class Main extends Application {
 		//f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));		
 				
 		new AuthorizationController().init();
+		help = new HelpFrames();
 	}
 	
 	public static void main(String[] args) {		
@@ -93,5 +94,13 @@ public class Main extends Application {
 
 	public static void setComplexStage(Stage complexStage) {
 		Main.complexStage = complexStage;
+	}
+
+	public static HelpFrames getHelp() {
+		return help;
+	}
+
+	public static void setHelp(HelpFrames help) {
+		Main.help = help;
 	}
 }

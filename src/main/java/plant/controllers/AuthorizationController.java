@@ -65,8 +65,10 @@ public class AuthorizationController {
 			
 			System.out.println("Privileges:");
 			
-			for(Object[] privilege: user.getPrivileges()) {
-				System.out.println(privilege[0]+": "+(Boolean.parseBoolean(String.valueOf(privilege[1]))==true?"true":"false"));
+			if(user.getPrivileges()!=null) {
+				for(Object[] privilege: user.getPrivileges()) {
+					System.out.println(privilege[0]+": "+(Boolean.parseBoolean(String.valueOf(privilege[1]))==true?"true":"false"));
+				}
 			}
 			
 			Main.setUser(user);

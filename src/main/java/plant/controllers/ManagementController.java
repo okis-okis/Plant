@@ -35,11 +35,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import plant.IFrame;
 import plant.Main;
@@ -172,9 +174,9 @@ public class ManagementController {
 	private JMenu initAdditionalInfoJMenu() {
 		JMenu additionalyJMenu = new JMenu("Дополнительно");
 		
-		JMenuItem docJMenu = new JMenuItem("Документация");
+		/*JMenuItem docJMenu = new JMenuItem("Документация");
 		docJMenu.addActionListener(getDocActionListener());
-		additionalyJMenu.add(docJMenu);
+		additionalyJMenu.add(docJMenu);*/
 		
 		JMenuItem aboutJMenu = new JMenuItem("Об авторе");
 		aboutJMenu.addActionListener(getAboutActionListener());
@@ -499,58 +501,42 @@ public class ManagementController {
 		}
 		
 		toolBar.addSeparator();
-					
-		JButton doc = new JButton();
 		
-		doc.setToolTipText("Открыть документацию");
-			
-		ImageIcon icon;
-		
-		try {
-			icon = new ImageIcon(Main.class.getResource("/images/doc.png"));
-			doc.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30, 30,  java.awt.Image.SCALE_SMOOTH)));
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		doc.addActionListener(getDocActionListener());
-		
-		toolBar.add(doc);
-		
-		JButton about = new JButton();
-		
-		about.setToolTipText("Открыть окно \"Об авторе\"");
-		try {
-			icon = new ImageIcon(Main.class.getResource("/images/about.png"));
-			about.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30, 30,  java.awt.Image.SCALE_SMOOTH)));
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		about.addActionListener(getAboutActionListener());
-		
-		toolBar.add(about);
-		
-		//complex.setToolTipText("Открыть окно управления комплексом");
-
-		//complex.addActionListener(getComplexActionListener());
-		
-		toolBar.add(getComplexButton());
+		toolBar.add(getFXButtons());
 		
 		return toolBar;
 	}
 	
-	private JFXPanel getComplexButton() {
+	private JFXPanel getFXButtons() {
 		JFXPanel panel = new JFXPanel();
 
 		Platform.runLater(new Runnable() {
           @Override
           public void run() {
-			VBox vbox = new VBox();
-					
+			HBox hbox = new HBox();
+				
+			Button doc = new Button();
+			doc.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+			    @Override
+			    public void handle(javafx.event.ActionEvent event) {
+			    	Main.getHelp().docWindow();
+			    }
+			});
+			doc.setTooltip(new Tooltip("Открыть документацию"));
+			doc.setPrefSize(40, 40);
+			 
+		    //Create imageview with background image
+		    ImageView view = new ImageView(new Image(Main.class.getResource("/images/doc.png").toExternalForm()));
+		    view.setFitHeight(30);
+		    view.setPreserveRatio(true);
+		 
+		    //Attach image to the button
+		    doc.setGraphic(view);
+			
 			Button complex = new Button();
 			complex.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
 			    @Override
 			    public void handle(javafx.event.ActionEvent event) {
-			    	//(new ComplexController()).init();
 			    	try {
 						URL complexFXML = getClass().getResource("/fxml/complex.fxml");
 						
@@ -572,16 +558,41 @@ public class ManagementController {
 			complex.setPrefSize(40, 40);
 			 
 		    //Create imageview with background image
-		    ImageView view = new ImageView(new Image(Main.class.getResource("/images/complex.png").toExternalForm()));
+		    view = new ImageView(new Image(Main.class.getResource("/images/complex.png").toExternalForm()));
 		    view.setFitHeight(30);
 		    view.setPreserveRatio(true);
 		 
 		    //Attach image to the button
 		    complex.setGraphic(view);
 			
-			vbox.getChildren().add(complex);
+		    Button about = new Button();
+		    about.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+			    @Override
+			    public void handle(javafx.event.ActionEvent event) {
+			    	Alert alert = new Alert(AlertType.INFORMATION);
+			    	alert.setTitle("Об авторе");
+			    	alert.setHeaderText("Информационно-измерительная и управляющая \nподсистема "
+			    			+ "аналитическим комплексом \nпоточного анализатора химического \nсостава"
+			    			+" аглошихты");
+			    	alert.setContentText("Заведение: ДонГТИ, СКС\nШифр группы: СКС-19\nАвтор: Кисельник О.Ю.\nПреподаватель: Бизянов Е.Е. проф., к.т.н., д.э.н\nГод производства: 2022");
+			    	alert.show();
+			    }
+			});
+		    about.setTooltip(new Tooltip("Открыть окно \"Об авторе\""));
+		    about.setPrefSize(40, 40);
+			 
+		    //Create imageview with background image
+		    view = new ImageView(new Image(Main.class.getResource("/images/about.png").toExternalForm()));
+		    view.setFitHeight(30);
+		    view.setPreserveRatio(true);
+		 
+		    //Attach image to the button
+		    about.setGraphic(view);
+		    
+		    hbox.setSpacing(5);
+		    hbox.getChildren().addAll(complex, doc, about);
 			
-			Scene scene = new Scene(vbox);
+			Scene scene = new Scene(hbox);
 			
 			panel.setScene(scene);
           }});
@@ -620,7 +631,7 @@ public class ManagementController {
 			result.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e){  
 					try {
-						ctor.newInstance();
+						addDesktopFrame((IFrame)ctor.newInstance());
 					}catch(Exception exp) {
 						return;
 					}

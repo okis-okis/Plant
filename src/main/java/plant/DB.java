@@ -130,62 +130,41 @@ public class DB {
 	}
 	
 	public Object[][] getPrivilegesByWorkerID(int id){
-		Object[] privil = getResult("SELECT p.`Mines view`,\r\n"
-				+ "p.`Mines edit`,\r\n"
+		String request = "SELECT p.`Mines view`,\r\n"
 				+ "p.`Echelons view`,\r\n"
-				+ "p.`Echelons edit`,\r\n"
 				+ "p.`Vans view`,\r\n"
-				+ "p.`Vans edit`,\r\n"
 				+ "p.`Positions view`,\r\n"
-				+ "p.`Positions edit`,\r\n"
 				+ "p.`Workers view`,\r\n"
-				+ "p.`Workers edit`,\r\n"
 				+ "p.`Elements view`,\r\n"
-				+ "p.`Elements edit`,\r\n"
 				+ "p.`Analyzed elements view`,\r\n"
-				+ "p.`Analyzed elements edit`,\r\n"
 				+ "p.`Sinter types view`,\r\n"
-				+ "p.`Sinter types edit`,\r\n"
 				+ "p.`Bunkers purpose view`,\r\n"
-				+ "p.`Bunkers purpose edit`,\r\n"
 				+ "p.`Bunkers view`,\r\n"
-				+ "p.`Bunkers edit`,\r\n"
 				+ "p.`Bunkers filling view`,\r\n"
-				+ "p.`Bunkers filling edit`,\r\n"
 				+ "p.`Stacks view`,\r\n"
-				+ "p.`Stacks edit`,\r\n"
-				+ "p.`Materail compositions view`,\r\n"
-				+ "p.`Materail compositions edit` FROM workers w INNER JOIN positions p ON w.position = p.idPosition WHERE idWorker = "+id+";", 26)[0];
-		
-		Object[][] result = new Object[26][2];
+				+ "p.`Materail compositions view`\r\n"
+				+ "FROM workers w INNER JOIN positions p ON w.position = p.idPosition WHERE idWorker = "+id+";";
+			
+		//System.out.println(request);
+			
+		Object[] privil = getResult(request, 13)[0];
+			
+		Object[][] result = new Object[13][2];
 		result[0][0] = "Mines view";
-		result[1][0] = "Mines edit";
-		result[2][0] = "Echelons view";
-		result[3][0] = "Echelons edit";
-		result[4][0] = "Vans view";
-		result[5][0] = "Vans edit";
-		result[6][0] = "Positions view";
-		result[7][0] = "Positions edit";
-		result[8][0] = "Workers view";
-		result[9][0] = "Workers edit";
-		result[10][0] = "Elements view";
-		result[11][0] = "Elements edit";
-		result[12][0] = "AnalyzedElements view";
-		result[13][0] = "AnalyzedElements edit";
-		result[14][0] = "SinterTypes view";
-		result[15][0] = "SinterTypes edit";
-		result[16][0] = "BunkersPurpose view";
-		result[17][0] = "BunkersPurpose edit";
-		result[18][0] = "Bunkers view";
-		result[19][0] = "Bunkers edit";
-		result[20][0] = "BunkersFilling view";
-		result[21][0] = "BunkersFilling edit";
-		result[22][0] = "Stacks view";
-		result[23][0] = "Stacks edit";
-		result[24][0] = "MaterialComposition view";
-		result[25][0] = "MaterialComposition edit";
-		
-		for(int i=0;i<26;i++) {
+		result[1][0] = "Echelons view";
+		result[2][0] = "Vans view";
+		result[3][0] = "Positions view";
+		result[4][0] = "Workers view";
+		result[5][0] = "Elements view";
+		result[6][0] = "AnalyzedElements view";
+		result[7][0] = "SinterTypes view";
+		result[8][0] = "BunkersPurpose view";
+		result[9][0] = "Bunkers view";
+		result[10][0] = "BunkersFilling view";
+		result[11][0] = "Stacks view";
+		result[12][0] = "MaterialComposition view";
+			
+		for(int i=0;i<13;i++) {
 			if(privil[i].equals("0")) {
 				result[i][1] = false;
 			} else {
@@ -863,7 +842,7 @@ public class DB {
 	 * @return Result array
 	 */
 	public Object[][] getCompositionsWithWorker(){
-		return getResult("SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, C.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker;", MaterialComposition.getColumnLength());		
+		return getResult("SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker;", MaterialComposition.getColumnLength());		
 	}
 	
 	/**
@@ -872,7 +851,7 @@ public class DB {
 	 * @return Result array of elements
 	 */
 	public Object[] getCompositionWithWorkerByID(int id){
-		return getResult("SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, C.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker WHERE id = "+id+";", MaterialComposition.getColumnLength())[0];		
+		return getResult("SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker WHERE id = "+id+";", MaterialComposition.getColumnLength())[0];		
 	}
 	
 	/**
@@ -918,7 +897,7 @@ public class DB {
 	 */
 	public Object[][] getCompositionWithFilter(Object id, String startDate, String finishDate){
 		
-		String request = "SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, C.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker";
+		String request = "SELECT c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, c.Additional FROM materialcomposition c INNER JOIN workers w ON c.Worker = w.idWorker";
 		
 		String filter = "";
 		Boolean addEnd = false;
@@ -1294,11 +1273,11 @@ public class DB {
 	 * @return Array with result
 	 */
 	public Object[] getStackPassport(int idPass) {
-		return getResult("SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, C.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker WHERE s.id = "+idPass+";", 13)[0];
+		return getResult("SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker WHERE s.id = "+idPass+";", 13)[0];
 	}
 	
 	public Object[][] getStacksWithFilter(Object stackNumber, Object worker, Object startDate, Object finishDate) {
-		String request = "SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, C.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker ";
+		String request = "SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker ";
 		String filter = "";
 		
 		if(stackNumber!=null) {

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -13,10 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.lang.reflect.Constructor;
-import java.net.URI;
+import java.net.URL;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -27,21 +26,29 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 
-import javafx.embed.swing.SwingNode;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import plant.IFrame;
 import plant.Main;
 import plant.lib.CustomComboBox;
-import plant.lib.Internet;
 import plant.reports.ReportStacks;
 import plant.reports.ReportVans;
 import plant.reports.ReportWorkers;
-
 
 public class ManagementController {
 	
@@ -59,65 +66,32 @@ public class ManagementController {
 	 */
 	private JDesktopPane desktop;
 	
-	public ManagementController() {
-		
-//		BorderPane borderPane = new BorderPane();
-//		
-//		SwingNode menuBar = new SwingNode();
-//		
-//		SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//            	menuBar.setContent(initializationMenu());
-//            }
-//        });
-//		
-//		borderPane.setTop(menuBar);
-//		
-//		SwingNode content = new SwingNode();
-//		
-//		SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//            	content.setContent(initializationContent());
-//            }
-//        });
-//		
-//	    borderPane.setCenter(content);
-//	    
-//		scene = new Scene(borderPane);
-//		stage = new Stage();
-//		stage.setScene(scene);
-//		stage.setMaximized(true);
-//		stage.show();
-		
-		SwingUtilities.invokeLater(() -> {
-			//Init main frame
-			mainFrame = new JFrame("СУБД фиксации обработки сырья для металлургического комбината");
+	public ManagementController() {	
+		//Init main frame
+		mainFrame = new JFrame("СУБД фиксации обработки сырья для металлургического комбината");
 							
-			//Add to close program event operation for close database connection
-			mainFrame.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					Main.getDB().closeConnection();
-			        // Terminate the program after the close button is clicked.
-					System.exit(0);
-				}
-			});
-							
-			//Add new components of interface
-			mainFrame.setJMenuBar(initializationMenu());
-							
-			mainFrame.setContentPane(initializationContent());
-					
-			mainFrame.setSize(700, 400);
-			// this method display the JFrame to center position of a screen
-			mainFrame.setLocationRelativeTo(null); 
-							
-			mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-							
-			mainFrame.setVisible(true);
+		//Add to close program event operation for close database connection
+		mainFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Main.getDB().closeConnection();
+		        // Terminate the program after the close button is clicked.
+				System.exit(0);
+			}
 		});
+							
+		//Add new components of interface
+		mainFrame.setJMenuBar(initializationMenu());
+							
+		mainFrame.setContentPane(initializationContent());
+		
+		mainFrame.setSize(700, 400);
+		// this method display the JFrame to center position of a screen
+		mainFrame.setLocationRelativeTo(null); 
+							
+		mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
+		mainFrame.setVisible(true);
 	}
 	
 	/**
@@ -154,6 +128,7 @@ public class ManagementController {
 	 */
 	private JMenuBar initializationMenu(){
 		//Create JMenu
+	
 		JMenuBar result = new JMenuBar();
 
 		//Create Table JMenu and Sub JMenu
@@ -163,7 +138,7 @@ public class ManagementController {
 		if(subJMenu!=null) {
 			tableJMenu.add(subJMenu);
 		}
-		
+	
 		subJMenu = initMembersJMenu();
 		if(subJMenu!=null) {
 			tableJMenu.add(subJMenu);
@@ -199,9 +174,9 @@ public class ManagementController {
 	private JMenu initAdditionalInfoJMenu() {
 		JMenu additionalyJMenu = new JMenu("Дополнительно");
 		
-		JMenuItem docJMenu = new JMenuItem("Документация");
+		/*JMenuItem docJMenu = new JMenuItem("Документация");
 		docJMenu.addActionListener(getDocActionListener());
-		additionalyJMenu.add(docJMenu);
+		additionalyJMenu.add(docJMenu);*/
 		
 		JMenuItem aboutJMenu = new JMenuItem("Об авторе");
 		aboutJMenu.addActionListener(getAboutActionListener());
@@ -297,7 +272,7 @@ public class ManagementController {
 		}catch(Exception e) {}
 		return null;
 	}
-    
+   
 	/**
 	 * Create JMenu section "forming sinter"
 	 * @return Customized JMenu with sub JMenus
@@ -410,55 +385,9 @@ public class ManagementController {
 	 * @return Container Customized container with MDI components
 	 * @see Container
 	 */
-	/*private SwingNode initializationContent(){	      
-		desktop = new JDesktopPane();
-		
-		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-		
-		desktop.setBackground(Color.lightGray);
-		
-		JScrollPane scrollPane = new JScrollPane();
-
-		JViewport viewport = new JViewport();
-
-		viewport.setView(desktop);
-
-		scrollPane.setViewport(viewport);
-
-		desktop.setPreferredSize(new Dimension(1600,1200));
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		
-		panel.add(scrollPane, BorderLayout.CENTER);
-		
-		//panel.add(getToolBar(), BorderLayout.NORTH);
-		
-		JPanel statusPanel = new JPanel(new FlowLayout());
-		dateLabel = new JLabel(java.time.LocalDate.now().toString());
-		statusPanel.add(dateLabel);
-		panel.add(statusPanel, BorderLayout.SOUTH);
-		
-		final SwingNode swingNode = new SwingNode();
-		
-		/*SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                swingNode.setContent(panel);
-            }
-        });
-		
-		swingNode.setContent( desktop );
-		
-		return swingNode;
-	}*/
-	
-	/**Initialization content of program </br>
-	 * Create MDI interface
-	 * @return Container Customized container with MDI components
-	 * @see Container
-	 */
 	private JPanel initializationContent() {
 		JPanel panel = new JPanel(new BorderLayout());
+		
 		desktop = new JDesktopPane();
 		
 		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -477,7 +406,7 @@ public class ManagementController {
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		
-		//panel.add(getToolBar(), BorderLayout.NORTH);
+		panel.add(getToolBar(), BorderLayout.NORTH);
 		
 		JPanel statusPanel = new JPanel(new FlowLayout());
 		dateLabel = new JLabel(java.time.LocalDate.now().toString());
@@ -487,14 +416,14 @@ public class ManagementController {
 		return panel;
 	}
 	
-	/*protected Container getToolBar() {
+	protected Container getToolBar() {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setOrientation(JToolBar.HORIZONTAL);
 		Boolean sep = false;
 		
 		JButton button;
 		if(Main.getUser().getPrivilege("Workers view")) {
-			button = getToolButton("Открыть таблицу работников", "workers", "IFrames", "Workers");
+			button = getToolButton("Открыть таблицу работников", "workers", "plant.frames", "Workers");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -502,7 +431,7 @@ public class ManagementController {
 		}
 		
 		if(Main.getUser().getPrivilege("Positions view")) {
-			button = getToolButton("Открыть таблицу должностей", "positions", "IFrames", "Positions");
+			button = getToolButton("Открыть таблицу должностей", "positions", "plant.frames", "Positions");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -515,7 +444,7 @@ public class ManagementController {
 		}
 		
 		if(Main.getUser().getPrivilege("Mines view")) {
-			button = getToolButton("Открыть таблицу рудников", "mines", "IFrames", "Mines");
+			button = getToolButton("Открыть таблицу рудников", "mines", "plant.frames", "Mines");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -523,7 +452,7 @@ public class ManagementController {
 		}
 		
 		if(Main.getUser().getPrivilege("Vans view")) {
-			button = getToolButton("Открыть таблицу вагонов", "vans", "IFrames", "Vans");
+			button = getToolButton("Открыть таблицу вагонов", "vans", "plant.frames", "Vans");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -536,7 +465,7 @@ public class ManagementController {
 		}
 		
 		if(Main.getUser().getPrivilege("AnalyzedElements view")) {
-			button = getToolButton("Открыть таблица анализируемых элементов", "chemicalElements", "IFrames", "AnalyzedElements");
+			button = getToolButton("Открыть таблица анализируемых элементов", "chemicalElements", "plant.frames", "AnalyzedElements");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -544,7 +473,7 @@ public class ManagementController {
 		}
 		
 		if(Main.getUser().getPrivilege("MaterialComposition view")) {
-			button = getToolButton("Открыть таблицу составов материала", "composition", "IFrames", "MaterialComposition");
+			button = getToolButton("Открыть таблицу составов материала", "composition", "plant.frames", "MaterialComposition");
 			if(button!=null) {
 				toolBar.add(button);
 			}
@@ -556,54 +485,119 @@ public class ManagementController {
 			sep = !sep;
 		}
 		
-		button = getToolButton("Паспорта с хим.составом на штабеля", "stack_raport", "Reports", "ReportStacks");
+		button = getToolButton("Паспорта с хим.составом на штабеля", "stack_raport", "plant.reports", "ReportStacks");
 		if(button!=null) {
 			toolBar.add(button);
 		}
 		
-		button = getToolButton("Паспорта с хим.составом на содержимое вагонов", "vagons_raport", "Reports", "ReportVans");
+		button = getToolButton("Паспорта с хим.составом на содержимое вагонов", "vagons_raport", "plant.reports", "ReportVans");
 		if(button!=null) {
 			toolBar.add(button);
 		}
 		
-		button = getToolButton("Отчёт о работниках", "workers_raport", "Reports", "ReportWorkers");
+		button = getToolButton("Отчёт о работниках", "workers_raport", "plant.reports", "ReportWorkers");
 		if(button!=null) {
 			toolBar.add(button);
 		}
 		
 		toolBar.addSeparator();
 		
-			
-		JButton doc = new JButton();
-		
-		doc.setToolTipText("Открыть документацию");
-			
-		ImageIcon icon;
-		
-		try {
-			icon = new ImageIcon(Main.class.getResource("/images/doc.png"));
-			doc.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30, 30,  java.awt.Image.SCALE_SMOOTH)));
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		doc.addActionListener(getDocActionListener());
-		
-		toolBar.add(doc);
-		
-		JButton about = new JButton();
-		
-		about.setToolTipText("Открыть окно \"Об авторе\"");
-		try {
-			icon = new ImageIcon(Main.class.getResource("/images/about.png"));
-			about.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30, 30,  java.awt.Image.SCALE_SMOOTH)));
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		about.addActionListener(getAboutActionListener());
-		
-		toolBar.add(about);
+		toolBar.add(getFXButtons());
 		
 		return toolBar;
+	}
+	
+	private JFXPanel getFXButtons() {
+		JFXPanel panel = new JFXPanel();
+
+		Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+			HBox hbox = new HBox();
+				
+			Button doc = new Button();
+			doc.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+			    @Override
+			    public void handle(javafx.event.ActionEvent event) {
+			    	Main.getHelp().docWindow();
+			    }
+			});
+			doc.setTooltip(new Tooltip("Открыть документацию"));
+			doc.setPrefSize(40, 40);
+			 
+		    //Create imageview with background image
+		    ImageView view = new ImageView(new Image(Main.class.getResource("/images/doc.png").toExternalForm()));
+		    view.setFitHeight(30);
+		    view.setPreserveRatio(true);
+		 
+		    //Attach image to the button
+		    doc.setGraphic(view);
+			
+			Button complex = new Button();
+			complex.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+			    @Override
+			    public void handle(javafx.event.ActionEvent event) {
+			    	try {
+						URL complexFXML = getClass().getResource("/fxml/complex.fxml");
+						
+						Parent root = FXMLLoader.load(complexFXML);
+						
+					    Scene scene = new Scene(root);
+					    Stage stage = new Stage();
+					    
+					    stage.setTitle("Управление комплексом");
+					    stage.setScene(scene);
+					    stage.setMaximized(true);
+					    stage.show();
+			    	} catch(Exception e) {
+						e.printStackTrace();
+					}
+			    }
+			});
+			complex.setTooltip(new Tooltip("Открыть окно управления комплексом"));
+			complex.setPrefSize(40, 40);
+			 
+		    //Create imageview with background image
+		    view = new ImageView(new Image(Main.class.getResource("/images/complex.png").toExternalForm()));
+		    view.setFitHeight(30);
+		    view.setPreserveRatio(true);
+		 
+		    //Attach image to the button
+		    complex.setGraphic(view);
+			
+		    Button about = new Button();
+		    about.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+			    @Override
+			    public void handle(javafx.event.ActionEvent event) {
+			    	Alert alert = new Alert(AlertType.INFORMATION);
+			    	alert.setTitle("Об авторе");
+			    	alert.setHeaderText("Информационно-измерительная и управляющая \nподсистема "
+			    			+ "аналитическим комплексом \nпоточного анализатора химического \nсостава"
+			    			+" аглошихты");
+			    	alert.setContentText("Заведение: ДонГТИ, СКС\nШифр группы: СКС-19\nАвтор: Кисельник О.Ю.\nПреподаватель: Бизянов Е.Е. проф., к.т.н., д.э.н\nГод производства: 2022");
+			    	alert.show();
+			    }
+			});
+		    about.setTooltip(new Tooltip("Открыть окно \"Об авторе\""));
+		    about.setPrefSize(40, 40);
+			 
+		    //Create imageview with background image
+		    view = new ImageView(new Image(Main.class.getResource("/images/about.png").toExternalForm()));
+		    view.setFitHeight(30);
+		    view.setPreserveRatio(true);
+		 
+		    //Attach image to the button
+		    about.setGraphic(view);
+		    
+		    hbox.setSpacing(5);
+		    hbox.getChildren().addAll(complex, doc, about);
+			
+			Scene scene = new Scene(hbox);
+			
+			panel.setScene(scene);
+          }});
+		
+		return panel;
 	}
 	
 	private JButton getToolButton(String tooltip, String imageFileTitle, String packageTitle, String className) {
@@ -637,7 +631,7 @@ public class ManagementController {
 			result.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e){  
 					try {
-						ctor.newInstance();
+						addDesktopFrame((IFrame)ctor.newInstance());
 					}catch(Exception exp) {
 						return;
 					}
@@ -647,16 +641,21 @@ public class ManagementController {
 			return result;
 		} catch(Exception e) {}
 		return null;
-	}*/
+	}
 	
 	public ActionListener getDocActionListener() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				//Main.getHelpFrames().docWindow();
-				Main.getComplexController().show();
+				System.out.println("Click doc");
 		    }
 		};
 	}
+	
+	/*private void openComplexWindow() {
+		Platform.runLater(new Runnable() { public void run() {
+			(new ComplexController()).init();
+		}});
+	}*/
 	
 	protected ActionListener getAboutActionListener() {
 		return new ActionListener() {

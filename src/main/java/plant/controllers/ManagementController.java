@@ -174,10 +174,6 @@ public class ManagementController {
 	private JMenu initAdditionalInfoJMenu() {
 		JMenu additionalyJMenu = new JMenu("Дополнительно");
 		
-		/*JMenuItem docJMenu = new JMenuItem("Документация");
-		docJMenu.addActionListener(getDocActionListener());
-		additionalyJMenu.add(docJMenu);*/
-		
 		JMenuItem aboutJMenu = new JMenuItem("Об авторе");
 		aboutJMenu.addActionListener(getAboutActionListener());
 		additionalyJMenu.add(aboutJMenu);

@@ -37,31 +37,18 @@ public class PossibilitiesButtonEditor extends DefaultCellEditor
     	        	Object[] data = Main.getDB().getPossibilitiesByPositionID(rowID[row]);
     	        	
     	        	JOptionPane.showMessageDialog(null, generateResponse(0, "рудников", data[2])+
-    	        			generateResponse(1, "рудников", data[3])+
-    	        			generateResponse(0, "эшелонов", data[4])+
-    	        			generateResponse(1, "эшелонов", data[5])+
-    	        			generateResponse(0, "вагонов", data[6])+
-    	        			generateResponse(1, "вагонов", data[7])+
-    	        			generateResponse(0, "должностей", data[8])+
-    	        			generateResponse(1, "должностей", data[9])+
-    	        			generateResponse(0, "работников", data[10])+
-    	        			generateResponse(1, "работников", data[11])+
-    	        			generateResponse(0, "элементов", data[12])+
-    	        			generateResponse(1, "элементов", data[13])+
-    	        			generateResponse(0, "анализируемых элементов", data[14])+
-    	        			generateResponse(1, "анализируемых элементов", data[15])+
-    	        			generateResponse(0, "типов шихты", data[16])+
-    	        			generateResponse(1, "типов шихты", data[17])+
-    	        			generateResponse(0, "назначений бункеров", data[18])+
-    	        			generateResponse(1, "назначений бункеров", data[19])+
-    	        			generateResponse(0, "бункеров", data[20])+
-    	        			generateResponse(1, "бункеров", data[21])+
-    	        			generateResponse(0, "наполнений бункеров", data[22])+
-    	        			generateResponse(1, "наполнений бункеров", data[23])+
-    	        			generateResponse(0, "штабелей", data[24])+
-    	        			generateResponse(1, "штабелей", data[25])+
-    	        			generateResponse(0, "составов материала", data[26])+
-    	        			generateResponse(1, "составов материала", data[27])
+    	        			generateResponse(0, "эшелонов", data[3])+
+    	        			generateResponse(0, "вагонов", data[4])+
+    	        			generateResponse(0, "должностей", data[5])+
+    	        			generateResponse(0, "работников", data[6])+
+    	        			generateResponse(0, "элементов", data[7])+
+    	        			generateResponse(0, "анализируемых элементов", data[8])+
+    	        			generateResponse(0, "типов шихты", data[9])+
+    	        			generateResponse(0, "назначений бункеров", data[10])+
+    	        			generateResponse(0, "бункеров", data[11])+
+    	        			generateResponse(0, "наполнений бункеров", data[12])+
+    	        			generateResponse(0, "штабелей", data[13])+
+    	        			generateResponse(0, "составов материала", data[14])
     	        			, "Возможности", JOptionPane.INFORMATION_MESSAGE);
     	        }
     	      }

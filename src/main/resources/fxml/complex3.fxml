@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane blendMode="DARKEN" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1098.0" prefWidth="1436.0" stylesheets="@../styles/complex.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plant.controllers.ComplexController">
+   <children>
+      <ScrollPane layoutX="48.0" layoutY="54.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="0.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="950.0" prefWidth="1500.0">
+               <children>
+                  <ImageView fitHeight="950.0" fitWidth="1500.0" layoutX="173.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <image>
+                        <Image url="@../images/Структура.png" />
+                     </image>
+                  </ImageView>
+                  <Circle fx:id="bunkerDry" fill="LIME" layoutX="644.0" layoutY="533.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="splitter3" fill="LIME" layoutX="624.0" layoutY="591.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="splitter05" fill="LIME" layoutX="676.0" layoutY="619.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="bunkerCompile" fill="LIME" layoutX="644.0" layoutY="674.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="conveyor" fill="LIME" layoutX="657.0" layoutY="741.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="ukat1" fill="LIME" layoutX="596.0" layoutY="706.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="ukat2" fill="LIME" layoutX="557.0" layoutY="706.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fx:id="IKLamp" fill="LIME" layoutX="464.0" layoutY="700.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="LIME" layoutX="270.0" layoutY="700.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" fx:id="xrayLED" />
+                  <Rectangle fx:id="sampler" arcHeight="5.0" arcWidth="5.0" fill="#2197ff" height="9.0" layoutX="167.0" layoutY="717.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="84.0" />
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+      <AreaChart fx:id="areachart" prefHeight="300.0" prefWidth="1007.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="300.0">
+        <xAxis>
+          <NumberAxis autoRanging="false" label="эВ" minorTickCount="10" side="BOTTOM" tickLabelGap="0.0" tickUnit="512.0" upperBound="10000.0" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis autoRanging="false" label="Кол-во импульсов" side="LEFT" tickLabelGap="0.0" tickUnit="1024.0" upperBound="16384.0" />
+        </yAxis>
+      </AreaChart>
+      <PieChart fx:id="piechart" layoutX="728.0" layoutY="527.0" prefHeight="300.0" prefWidth="300.0" title="Соотношения" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <VBox alignment="TOP_CENTER" layoutX="1057.0" layoutY="162.0" prefHeight="200.0" prefWidth="250.0" spacing="10.0" AnchorPane.bottomAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="bunkerDryM" fill="#21ff3f" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Бункер сушки" />
+                  <Button fx:id="bunkerDryB" mnemonicParsing="false" onAction="#bunkerDrying" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="splitter3M" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Дробление -3мм" />
+                  <Button fx:id="splitter3B" mnemonicParsing="false" onAction="#splitter3Manage" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="splitter05M" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Дробление -0.5мм" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="246.0">
+               <children>
+                  <Button fx:id="splitter05B" mnemonicParsing="false" onAction="#splitter05Manage" text="Выключить" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets right="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="bunkerCompileM" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Бункер сбора материала" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="246.0">
+               <children>
+                  <Button fx:id="bunkerCompileB" mnemonicParsing="false" onAction="#bunkerCompile" text="Выключить" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets right="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="conveyorM" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Конвейр" />
+                  <Button fx:id="conveyorB" mnemonicParsing="false" onAction="#conveyor" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="ukat1M" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Укатывание (Р1)" />
+                  <Button fx:id="ukat1B" mnemonicParsing="false" onAction="#ukat1" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="ukat2M" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="Укатывание (Р2)" />
+                  <Button fx:id="ukat2B" mnemonicParsing="false" onAction="#ukat2" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="IKLampM" fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Label text="ИК лампа" />
+                  <Button fx:id="IKLampB" mnemonicParsing="false" onAction="#iklamp" text="Выключить" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fill="LIME" radius="10.0" stroke="BLACK" strokeType="INSIDE" fx:id="xrayLEDM" />
+                  <Label text="РС Анализ" />
+                  <Button mnemonicParsing="false" onAction="#xray" text="Выключить" fx:id="xrayLEDB" />
+               </children>
+            </HBox>
+            <HBox prefHeight="31.0" prefWidth="246.0" spacing="5.0">
+               <children>
+                  <Circle fx:id="samplerM" fill="WHITE" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Button fx:id="samplerB" mnemonicParsing="false" onAction="#sampler" text="Установить пробу" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

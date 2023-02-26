@@ -74,8 +74,6 @@ public class DB {
             JOptionPane.showMessageDialog(null, exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-		//f.setVisible(false);
-		//f.dispose(); //Destroy the JFrame object
 		return true;
 	}
 	

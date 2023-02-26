@@ -25,6 +25,8 @@ public class Main extends Application {
 	
 	private static ComplexController complex;
 	
+	private static Serial serial;
+	
 	@Override
 	public void start(Stage primaryStage) {	
 		//Init variable for working with database
@@ -41,6 +43,19 @@ public class Main extends Application {
 				
 		new AuthorizationController().init();
 		help = new HelpFrames();
+		
+		serial = new Serial();
+		try {
+			serial.initSerialPort("COM3", 9600);
+			serial.openPort();
+	    	if(!serial.isOpen()) {
+	        	System.out.println("Port closed");
+	        	return;
+	        }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {		
@@ -102,5 +117,9 @@ public class Main extends Application {
 
 	public static void setHelp(HelpFrames help) {
 		Main.help = help;
+	}
+
+	public static Serial getSerial() {
+		return serial;
 	}
 }

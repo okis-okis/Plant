@@ -183,7 +183,7 @@ public class Positions extends IFrame{
 	    	alert.setHeaderText("Ошибка получения идентификатора записи");
 	    	alert.setContentText(e.getMessage());
 	    	alert.show();
-			System.out.println(e);
+			Main.getLogger().error(e.getMessage());
 		}
 		return -1;
 	}
@@ -196,7 +196,7 @@ public class Positions extends IFrame{
 					try {
 						(new PositionFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {

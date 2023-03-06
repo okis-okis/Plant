@@ -69,8 +69,7 @@ public class DB {
 			
 			connection = DriverManager.getConnection("jdbc:mysql://"+ServerHost+":"+ServerPort+"/"+dbName+"?characterEncoding=utf8", info);
 		} catch (Exception exception) {
-			
-            System.out.println("Database error: "+exception);
+			Main.getLogger().error("Database error: "+exception);
             JOptionPane.showMessageDialog(null, exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }

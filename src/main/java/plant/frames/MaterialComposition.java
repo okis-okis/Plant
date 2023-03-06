@@ -380,7 +380,7 @@ public class MaterialComposition extends IFrame{
 	 
 	            // Throws DateTimeParseException
 	            // if the string cannot be parsed
-	            System.out.println("Exception: " + e);
+	        	Main.getLogger().error(e.getMessage());
 	        }
 			
 			additionalArea.setText((String)editData[10]);

@@ -185,8 +185,7 @@ public class Bunkers extends IFrame{
 					try {
 						(new BunkerFrame(0)).setEditContent(data[0]);
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {

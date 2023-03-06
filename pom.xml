@@ -6,7 +6,7 @@
 
   <groupId>plant</groupId>
   <artifactId>plant</artifactId>
-  <version>0.92</version>
+  <version>0.93</version>
   <packaging>jar</packaging>
   
   <name>plant</name>
@@ -103,6 +103,11 @@
 	    <version>2.9.3</version>
 	</dependency>
 	
+	<dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+         <version>1.7.5</version>
+    </dependency>
   </dependencies>
 
   <build>

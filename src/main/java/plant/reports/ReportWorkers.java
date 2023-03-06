@@ -239,7 +239,7 @@ public class ReportWorkers{
 				try {
 					jtp.print();
 				} catch (PrinterException e) {
-					e.printStackTrace();
+					Main.getLogger().error(e.getMessage());
 					JOptionPane.showConfirmDialog(null, e.getMessage(), "Возникла ошибка печати", 
 							JOptionPane.ERROR_MESSAGE);
 				}

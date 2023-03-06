@@ -47,7 +47,7 @@ public class AuthorizationController {
 			stage.show();
 			Main.setAuthorizationStage(stage);
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			Main.getLogger().error(e.getMessage());
 		}
 	}
 	
@@ -63,11 +63,11 @@ public class AuthorizationController {
 		}else {
 			User user = new User(loginField.getText());
 			
-			System.out.println("Privileges:");
+			Main.getLogger().debug("Privileges:");
 			
 			if(user.getPrivileges()!=null) {
 				for(Object[] privilege: user.getPrivileges()) {
-					System.out.println(privilege[0]+": "+(Boolean.parseBoolean(String.valueOf(privilege[1]))==true?"true":"false"));
+					Main.getLogger().debug(privilege[0]+": "+(Boolean.parseBoolean(String.valueOf(privilege[1]))==true?"true":"false"));
 				}
 			}
 			

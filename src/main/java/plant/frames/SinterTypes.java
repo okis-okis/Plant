@@ -174,7 +174,7 @@ public class SinterTypes extends IFrame{
 						sinterFrame = new SinterFrame(0);
 						sinterFrame.setEditContent(data[0]);
 					} catch (ParseException e1) {
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -485,7 +485,7 @@ public class SinterTypes extends IFrame{
 					compositionIDField.setValue(chooser.getChoosedID());
 					chooser.destroy();
 				} catch(Exception exp) {
-					System.out.println("Thread error: "+exp);
+					Main.getLogger().error(exp.getMessage());
 				}
 			}
 		}

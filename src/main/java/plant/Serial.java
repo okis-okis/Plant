@@ -44,10 +44,12 @@ public class Serial implements SerialPortDataListener {
   
   public boolean openPort() throws Exception {
       if (serialPort == null) {
+    	  Main.getLogger().error("The connection to port wasn't initialized");
           throw new Exception("The connection wasn't initialized");
       }
 
       if (serialPort.isOpen()) {
+    	  Main.getLogger().error("Can not connect, serial port is already open");
           throw new Exception("Can not connect, serial port is already open");
       }
 
@@ -93,7 +95,7 @@ public class Serial implements SerialPortDataListener {
       if(result.contains("|")) {
     	  result = result.replace("\n", "");
     	  result = result.replace("|", "\n");
-    	  System.out.println("Received data: "+result);
+    	  Main.getLogger().debug("Received data: "+result);
 	      process = true;
       }
   }
@@ -124,7 +126,7 @@ public class Serial implements SerialPortDataListener {
 	  try {
 		  sendStringToComm(command);
 	  }catch(Exception e) {
-		  System.out.println(e);
+		  Main.getLogger().error(e.getMessage());
 	  }
   }
 }

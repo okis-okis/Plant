@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import plant.Main;
+
 public class Internet {
 	public static boolean openWebpage(URI uri) {
 	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -13,7 +15,7 @@ public class Internet {
 	            desktop.browse(uri);
 	            return true;
 	        } catch (Exception e) {
-	            e.printStackTrace();
+	        	Main.getLogger().error(e.getMessage());
 	        }
 	    }
 	    return false;
@@ -23,7 +25,7 @@ public class Internet {
 	    try {
 	        return openWebpage(url.toURI());
 	    } catch (URISyntaxException e) {
-	        e.printStackTrace();
+	    	Main.getLogger().error(e.getMessage());
 	    }
 	    return false;
 	}

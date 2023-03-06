@@ -191,8 +191,7 @@ public class Elements extends IFrame{
 					try {
 						(new ElementFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -401,8 +400,6 @@ public class Elements extends IFrame{
 						KaValue = ((Double)Ka.getValue()).floatValue();
 					}
 					
-					//System.out.println(Kb.getValue().getClass().getSimpleName());
-					
 					if(Kb.getValue().getClass().getSimpleName().equals("Float")) {
 						KbValue = (Float)Kb.getValue();
 					}else {
@@ -465,8 +462,6 @@ public class Elements extends IFrame{
 					}else {
 						KaValue = ((Double)Ka.getValue()).floatValue();
 					}
-					
-					//System.out.println(Kb.getValue().getClass().getSimpleName());
 					
 					if(Kb.getValue().getClass().getSimpleName().equals("Float")) {
 						KbValue = (Float)Kb.getValue();

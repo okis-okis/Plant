@@ -170,8 +170,7 @@ public class AnalyzedElements extends IFrame{
 					try {
 						(new AnalyzedElementFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {

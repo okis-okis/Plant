@@ -172,8 +172,7 @@ public class Stacks extends IFrame{
 					try {
 						(new StacksFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -389,10 +388,7 @@ public class Stacks extends IFrame{
 	 
 	        // Catch block to handle exceptions
 	        catch (DateTimeParseException e) {
-	 
-	            // Throws DateTimeParseException
-	            // if the string cannot be parsed
-	            System.out.println("Exception: " + e);
+	        	Main.getLogger().error(e.getMessage());
 	        }
 		}
 		
@@ -426,7 +422,7 @@ public class Stacks extends IFrame{
 								composition = (int)compositionIDField.getValue();
 							}
 						}catch(Exception exp) {
-							System.out.println("Composition chooser error: "+exp);
+							Main.getLogger().error("Composition chooser error: "+exp.getMessage());
 						}
 						
 						if(Main.getDB().addStack(
@@ -467,7 +463,7 @@ public class Stacks extends IFrame{
 							composition = (int)compositionIDField.getValue();
 						}
 					}catch(Exception exp) {
-						System.out.println("Composition chooser error: "+exp);
+						Main.getLogger().error("Composition chooser error: "+exp.getMessage());
 					}
 					
 									
@@ -510,7 +506,7 @@ public class Stacks extends IFrame{
 					compositionIDField.setValue(chooser.getChoosedID());
 					chooser.destroy();
 				} catch(Exception exp) {
-					System.out.println("Thread error: "+exp);
+					Main.getLogger().error("Thread error: "+exp.getMessage());
 				}
 			}
 		}

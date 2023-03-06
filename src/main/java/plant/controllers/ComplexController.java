@@ -101,7 +101,7 @@ public class ComplexController implements Initializable{
 			    	Main.getSerial().executeCommand("ALL");
 					sleep(5000);
 					result = Main.getSerial().getResult();
-					System.out.println(result);
+					Main.getLogger().debug(result);
 					    
 					String[] arr = result.split(":");
 					    
@@ -136,14 +136,14 @@ public class ComplexController implements Initializable{
 								lampManageButton.setText("Включить");
 					   		}
 					   	}catch(Exception e) {
-					   		System.out.println("Возникла ошибка с определением состояния ИК лампы");
+					   		Main.getLogger().error("Возникла ошибка с определением состояния ИК лампы");
 					   	}
 					});
 					if(!stop) {
 						sleep(10000);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					Main.getLogger().error(e.getMessage());
 				}
 			  }
 		  }
@@ -174,7 +174,7 @@ public class ComplexController implements Initializable{
 					});
 				}
 			} catch (Exception e) {
-				System.out.println(e);
+				Main.getLogger().error(e.getMessage());
 			}
 			updateThread = new UpdateThread();
 	        updateThread.start();

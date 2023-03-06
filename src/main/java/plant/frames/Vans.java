@@ -185,7 +185,7 @@ public class Vans extends IFrame{
 					try {
 						(new VanFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -431,7 +431,7 @@ public class Vans extends IFrame{
 							result = "Запись была добавлена в БД";
 							messageCode = JOptionPane.INFORMATION_MESSAGE;
 						}}catch(Exception exp) {
-							
+							Main.getLogger().error(exp.getMessage());
 						}
 						
 						JOptionPane.showMessageDialog(null, result, "Результат:", messageCode);

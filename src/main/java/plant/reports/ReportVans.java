@@ -93,7 +93,7 @@ public class ReportVans{
                     attr_set.add(OrientationRequested.LANDSCAPE);                    
                     jtp.print(null, null, true, null, attr_set, true);
 				} catch (PrinterException e) {
-					e.printStackTrace();
+					Main.getLogger().error(e.getMessage());
 				}
 			}
 		});

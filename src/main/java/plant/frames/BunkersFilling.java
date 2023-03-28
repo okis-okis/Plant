@@ -131,8 +131,7 @@ public class BunkersFilling extends IFrame{
 					try {
 						(new FillingFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -404,7 +403,7 @@ public class BunkersFilling extends IFrame{
 		 
 		            // Throws DateTimeParseException
 		            // if the string cannot be parsed
-		            System.out.println("Exception: " + e);
+		            Main.getLogger().error("Exception: " + e);
 		        }
 		}
 		
@@ -536,12 +535,9 @@ public class BunkersFilling extends IFrame{
 		private class StackNumberThread extends Thread{
 			public void run() {
 				try {
-					//System.out.println("Thread chooser: "+chooser);
 					while(chooser.isSetChoosedID() == false) {
-						//System.out.println(chooser.getChoosedID());
 						TimeUnit.SECONDS.sleep(1);
 					}
-					//System.out.println("Destroy process: "+chooser);
 					stackNumber.setValue(chooser.getChoosedID());
 					chooser.destroy();
 				} catch(Exception exp) {

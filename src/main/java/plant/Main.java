@@ -8,6 +8,8 @@ import plant.controllers.AuthorizationController;
 import plant.controllers.ComplexController;
 import plant.controllers.ManagementController;
 import plant.lib.HelpFrames;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main extends Application {
 	/**
@@ -25,10 +27,14 @@ public class Main extends Application {
 	
 	private static ComplexController complex;
 	
+	private static Logger logger;
+	
 	private static Serial serial;
 	
 	@Override
 	public void start(Stage primaryStage) {	
+		logger = LoggerFactory.getLogger(App.class);
+		
 		//Init variable for working with database
 		db = new DB();
 		
@@ -37,8 +43,10 @@ public class Main extends Application {
 		//Try to open connection with database
 		if(!db.openConnection()) {
 			JOptionPane.showMessageDialog(null,"Ошибка соединения с БД","Ошибка!",1);
+			logger.error("DB connection error!");
 			System.exit(1);
 		}
+		logger.info("Connect to DB");
 		//f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));		
 				
 		new AuthorizationController().init();
@@ -49,7 +57,7 @@ public class Main extends Application {
 			serial.initSerialPort("COM3", 9600);
 			serial.openPort();
 	    	if(!serial.isOpen()) {
-	        	System.out.println("Port closed");
+	        	logger.error("Serial port closed");
 	        	return;
 	        }
 		} catch (Exception e) {
@@ -121,5 +129,9 @@ public class Main extends Application {
 
 	public static Serial getSerial() {
 		return serial;
+	}
+
+	public static Logger getLogger() {
+		return logger;
 	}
 }

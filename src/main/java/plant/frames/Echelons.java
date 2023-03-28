@@ -113,8 +113,7 @@ public class Echelons extends IFrame{
 					try {
 						(new EchelonFrame(0)).setEditContent(data[0]);
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {
@@ -248,29 +247,6 @@ public class Echelons extends IFrame{
 			table.getModel().setValueAt(mines.getItemByID(Integer.parseInt((String)dataEchelons[i][2])), i, 2);
 		}
 	}
-	
-	/**
-	 * Fill in and add the workers column
-	 * @param dataEchelons Data of table. Need for fill column.
-	 */
-	/*private void setWorkersColumn(Object[][] dataEchelons) {
-		CustomComboBox workers = new CustomComboBox();
-		Object[][] workersArray = Main.getDB().getWorkers(WorkersIFrame.getColumnLength());
-		for(Object[] row: workersArray) {
-			workers.addID(Integer.parseInt((String) row[0]));
-			workers.addItem((String)row[1]);
-		}
-		
-		for(int i=0;i<dataEchelons.length;i++) {
-			table.getModel().setValueAt(workers.getItemByID(Integer.parseInt((String)dataEchelons[i][3])), i, 3);
-		}
-		
-		table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(workers));
-		
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setToolTipText("Выберите работника, который осуществил проверку эшелона");
-        table.getColumnModel().getColumn(3).setCellRenderer(renderer);
-	}*/
 
 	/**
 	 * Get count of columns in Echelons table
@@ -459,22 +435,6 @@ public class Echelons extends IFrame{
 			
 			contentPanel.add(mines, Main.getManagementController().createGbc(0, 3));
 		}
-		
-		/**
-		 * Initialize workers section
-		 */
-		/*private void initWorkersSection() {
-			//Workers section
-			contentPanel.add(new JLabel("Выберите работника, который принял эшелон"), Main.getManagementController().createGbc(0, 4));
-			workers = new CustomComboBox();
-			
-			for(Object[] row: Main.getDB().getWorkers()) {
-				workers.addID(Integer.parseInt((String) row[0]));
-				workers.addItem((String)row[1]);
-			}
-			
-			contentPanel.add(workers, Main.getManagementController().createGbc(0, 5));
-		}*/
 		
 		/**
 		 * Initialize arrival dates section

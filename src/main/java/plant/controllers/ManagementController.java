@@ -174,10 +174,6 @@ public class ManagementController {
 	private JMenu initAdditionalInfoJMenu() {
 		JMenu additionalyJMenu = new JMenu("Дополнительно");
 		
-		/*JMenuItem docJMenu = new JMenuItem("Документация");
-		docJMenu.addActionListener(getDocActionListener());
-		additionalyJMenu.add(docJMenu);*/
-		
 		JMenuItem aboutJMenu = new JMenuItem("Об авторе");
 		aboutJMenu.addActionListener(getAboutActionListener());
 		additionalyJMenu.add(aboutJMenu);
@@ -241,7 +237,9 @@ public class ManagementController {
 				return null;
 			}
 			return rawMaterial;
-		}catch(Exception e) {}
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
 		return null;
 	}
 	
@@ -269,7 +267,9 @@ public class ManagementController {
 			}
 			
 			return members;
-		}catch(Exception e) {}
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
 		return null;
 	}
    
@@ -302,7 +302,9 @@ public class ManagementController {
 			}
 			
 			return formSinter;
-		}catch(Exception e) {}
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
 		return null;
 	}
 	
@@ -339,7 +341,9 @@ public class ManagementController {
 			}
 			
 			return materialPrepare;
-		}catch(Exception e) {}
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
 		return null;
 	}
 	
@@ -353,11 +357,11 @@ public class ManagementController {
 			JMenuItem result = new JMenuItem(JMenuTitle);
 			Class<?> clazz = null;
 			try {
-				System.out.println("Attempt connect the class "+className);
+				Main.getLogger().debug("Attempt connect the class "+className);
 				clazz = Class.forName("plant.frames."+className);
-				System.out.println("Class "+className+" was connected");
+				Main.getLogger().debug("Class "+className+" was connected");
 			} catch(Exception e) {
-				System.out.println("Error connect the class "+e.getMessage());
+				Main.getLogger().error("Error connect the class "+e.getMessage());
 				return null;
 			}
 			
@@ -368,14 +372,14 @@ public class ManagementController {
 					try {
 						addDesktopFrame((IFrame)ctor.newInstance());
 					} catch (Exception e1) {
-						System.out.println(e1);
+						Main.getLogger().error(e1.getMessage());
 					}
 			    }
 			});
 			
 			return result;
 		} catch(Exception e) {
-			System.out.println(e);
+			Main.getLogger().error(e.getMessage());
 		}
 		return null;
 	}
@@ -550,7 +554,7 @@ public class ManagementController {
 					    stage.setMaximized(true);
 					    stage.show();
 			    	} catch(Exception e) {
-						e.printStackTrace();
+			    		Main.getLogger().error(e.getMessage());
 					}
 			    }
 			});
@@ -609,14 +613,14 @@ public class ManagementController {
 			icon = new ImageIcon(Main.class.getResource("/images/"+imageFileTitle+".png"));
 			result.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30, 30,  java.awt.Image.SCALE_SMOOTH)));
 		}catch(Exception e) {
-			System.out.println(e);
+			Main.getLogger().error(e.getMessage());
 		}
 		
 		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(packageTitle+"."+className);
 		} catch(ClassNotFoundException cnf) {
-			System.out.println(cnf);
+			Main.getLogger().error(cnf.getMessage());
 			return null;
 		}
 		
@@ -633,29 +637,26 @@ public class ManagementController {
 					try {
 						addDesktopFrame((IFrame)ctor.newInstance());
 					}catch(Exception exp) {
+						Main.getLogger().error(exp.getMessage());
 						return;
 					}
 			    }
 			});
 			
 			return result;
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
 		return null;
 	}
 	
 	public ActionListener getDocActionListener() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				System.out.println("Click doc");
+				Main.getLogger().debug("Open documentation");
 		    }
 		};
 	}
-	
-	/*private void openComplexWindow() {
-		Platform.runLater(new Runnable() { public void run() {
-			(new ComplexController()).init();
-		}});
-	}*/
 	
 	protected ActionListener getAboutActionListener() {
 		return new ActionListener() {
@@ -725,6 +726,7 @@ public class ManagementController {
 	    try {
 			f.setSelected(true);
 		} catch (java.beans.PropertyVetoException e) {
+			Main.getLogger().error(e.getMessage());
 		}
 	}
 }

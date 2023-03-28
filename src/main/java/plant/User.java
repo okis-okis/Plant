@@ -9,8 +9,8 @@ public class User {
 		this.username = username;
 		id = Main.getDB().getWorkerIDByUsername(username);
 		privileges = Main.getDB().getPrivilegesByWorkerID(id);
-		System.out.println("Username: "+username);
-		System.out.println("Worker id: "+id);
+		Main.getLogger().debug("Username: "+username);
+		Main.getLogger().debug("Worker id: "+id);
 	}
 	
 	public Object[][] getPrivileges() {

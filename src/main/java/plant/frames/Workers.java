@@ -118,7 +118,7 @@ public class Workers extends IFrame{
 					try {
 						(new WorkerFrame(0)).setEditContent();
 					} catch (ParseException e1) {
-						e1.printStackTrace();
+						Main.getLogger().error(e1.getMessage());
 					}
 					
 				} else {

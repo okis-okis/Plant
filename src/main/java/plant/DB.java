@@ -69,8 +69,7 @@ public class DB {
 			
 			connection = DriverManager.getConnection("jdbc:mysql://"+ServerHost+":"+ServerPort+"/"+dbName+"?characterEncoding=utf8", info);
 		} catch (Exception exception) {
-			
-            System.out.println("Database error: "+exception);
+			Main.getLogger().error("Database error: "+exception);
             JOptionPane.showMessageDialog(null, exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -343,7 +342,7 @@ public class DB {
 	}
 	
 	public Object[] getPossibilitiesByPositionID(int id){
-		return getResult("SELECT * FROM `xray`.`positions` WHERE idPosition = "+id+";", 28)[0];		
+		return getResult("SELECT * FROM `xray`.`positions` WHERE idPosition = "+id+";", 15)[0];		
 	}
 	
 	/**
@@ -352,11 +351,43 @@ public class DB {
 	 * @return true if note was add</br>
 	 * 		   false if get error
 	 */
-	public Boolean addPosition(String positionTitle) {
+	public Boolean addPosition(String positionTitle, Boolean[] possibilities) {
 		try {
 			PreparedStatement pstmt = connection.prepareStatement (
-					 "INSERT INTO `xray`.`positions` (`Position title`) VALUES (?);");
+					 "INSERT INTO `xray`.`positions`\r\n"
+					 + "			(`Position title`,\r\n"
+					 + "			`Mines view`,\r\n"
+					 + "			`Echelons view`,\r\n"
+					 + "			`Vans view`,\r\n"
+					 + "			`Positions view`,\r\n"
+					 + "			`Workers view`,\r\n"
+					 + "			`Elements view`,\r\n"
+					 + "			`Analyzed elements view`,\r\n"
+					 + "			`Sinter types view`,\r\n"
+					 + "			`Bunkers purpose view`,\r\n"
+					 + "			`Bunkers view`,\r\n"
+					 + "			`Bunkers filling view`,\r\n"
+					 + "			`Stacks view`,\r\n"
+					 + "			`Materail compositions view`)\r\n"
+					 + "			VALUES\r\n"
+					 + "			(?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?,\r\n"
+					 + "			?);");
+
 			pstmt.setString(1, positionTitle);
+			for(int i=0;i<possibilities.length;i++)
+				pstmt.setBoolean(i+2, possibilities[i]);
 			
 			return executeStatement(pstmt);
 		}catch(Exception e) {
@@ -385,11 +416,32 @@ public class DB {
 	 * @return true if note update successfully</br>
 	 * 		   false if get error
 	 */
-	public Boolean updatePosition(int id, String position) {
+	public Boolean updatePosition(int id, String position, Boolean[] possibilities) {
 		try {
-			PreparedStatement pstmt = connection.prepareStatement ("UPDATE `xray`.`positions` SET `Position title`= ? WHERE idPosition = ?;");
+			PreparedStatement pstmt = connection.prepareStatement ("UPDATE `xray`.`positions`\r\n"
+					+ "			SET\r\n"
+					+ "			`Position title` = ?,\r\n"
+					+ "			`Mines view` = ?,\r\n"
+					+ "			`Echelons view` = ?,\r\n"
+					+ "			`Vans view` = ?,\r\n"
+					+ "			`Positions view` = ?,\r\n"
+					+ "			`Workers view` = ?,\r\n"
+					+ "			`Elements view` = ?,\r\n"
+					+ "			`Analyzed elements view` = ?,\r\n"
+					+ "			`Sinter types view` = ?,\r\n"
+					+ "			`Bunkers purpose view` = ?,\r\n"
+					+ "			`Bunkers view` = ?,\r\n"
+					+ "			`Bunkers filling view` = ?,\r\n"
+					+ "			`Stacks view` = ?,\r\n"
+					+ "			`Materail compositions view` = ?\r\n"
+					+ "			WHERE `idPosition` = ?;");
+
 			pstmt.setString(1, position);
-			pstmt.setInt(2, id);
+			
+			for(int i=0;i<possibilities.length;i++)
+				pstmt.setBoolean(i+2, possibilities[i]);
+			
+			pstmt.setInt(possibilities.length+2, id);
 			return executeStatement(pstmt);
 		}catch(Exception e) {
 			System.out.println("Database error: "+e);

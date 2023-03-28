@@ -160,7 +160,7 @@ public class StackChooser {
 			public void actionPerformed(ActionEvent e){ 
 				if(stackTable.getSelectedRow() != -1) {
 					int id = Integer.parseInt((String)stackTable.getModel().getValueAt(stackTable.getSelectedRow(), 0));
-					System.out.println("Choosed id: "+id);
+					Main.getLogger().debug("Choosed id: "+id);
 					
 					int answer = JOptionPane.showConfirmDialog(null,
 							"Вы уверены, что хотите выбрать запись с идентификатором "+id+"?",
@@ -170,7 +170,7 @@ public class StackChooser {
 					if(answer == JOptionPane.YES_OPTION) {
 						choosedID = id;
 						isChoosedID = true;
-						System.out.println("Chooser mode: "+isChoosedID);
+						Main.getLogger().debug("Choosed mode: "+isChoosedID);
 					}else {
 						JOptionPane.showConfirmDialog(null, "Отправка состава была отменена!", "Сообщение об ошибке", 
 								JOptionPane.ERROR_MESSAGE);

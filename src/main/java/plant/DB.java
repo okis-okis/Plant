@@ -75,24 +75,6 @@ public class DB {
         }
 		return true;
 	}
-	
-	public JFrame createUI() {
-	    JFrame f = new JFrame ("Соединение с базой данных");
-	     
-	    final WaitLayerUI layerUI = new WaitLayerUI();
-	    JLayer<JPanel> jlayer = new JLayer<JPanel>(new JPanel(), layerUI);
-	     
-	    layerUI.start();
-	 
-	    f.add (jlayer);
-	     
-	    f.setSize(300, 200);
-	    f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-	    f.setLocationRelativeTo (null);
-	    f.setVisible (true);
-	    
-	    return f;
-	  }
 
 	/**
 	 *Close connection with database</br> 
@@ -109,6 +91,13 @@ public class DB {
 		return true;
 	}
 	
+	/**
+	 * User authorization function in the system
+	 * @param username String with name of user
+	 * @param password String with password for user account
+	 * @return true if user is exists with input login and password </br>
+	 * 		   false - error of authorization
+	 */
 	public Boolean login(String username, String password) {
 		try {
 			String request = "SELECT COUNT(idWorker) FROM xray.workers WHERE login LIKE MD5('"+username+"') AND password LIKE MD5('"+password+"')";
@@ -122,10 +111,20 @@ public class DB {
 		return false;
 	}
 	
+	/**
+	 * The function of obtaining the user ID by the name of the user (account)
+	 * @param username String with name of user
+	 * @return ID of worker
+	 */
 	public int getWorkerIDByUsername(String username) {
 		return Integer.parseInt(String.valueOf(getResult("SELECT idWorker FROM workers WHERE login LIKE MD5('"+username+"');", 1)[0][0]));		
 	}
 	
+	/**
+	 * Get privileges for a specific user (employee) by his ID
+	 * @param id of worker
+	 * @return array with privileges
+	 */
 	public Object[][] getPrivilegesByWorkerID(int id){
 		String request = "SELECT p.`Mines view`,\r\n"
 				+ "p.`Echelons view`,\r\n"
@@ -341,6 +340,11 @@ public class DB {
 		return getResult("SELECT * FROM `xray`.`positions`;", Positions.getColumnLength());		
 	}
 	
+	/**
+	 * Get the capabilities of a specific position
+	 * @param id of position
+	 * @return Array with capabilities
+	 */
 	public Object[] getPossibilitiesByPositionID(int id){
 		return getResult("SELECT * FROM `xray`.`positions` WHERE idPosition = "+id+";", 15)[0];		
 	}
@@ -913,6 +917,21 @@ public class DB {
 		return getResult("SELECT * FROM materialcomposition WHERE id = "+id+";", MaterialComposition.getColumnLength())[0];		
 	}
 	
+	/**
+	 * Add chemical composition to Composition Table in DB
+	 * @param MgO The content of MgO in the substance
+	 * @param CaO The content of CaO in the substance
+	 * @param Al2O3 The content of Al2O3 in the substance
+	 * @param SiO2 The content of SiO2 in the substance
+	 * @param P The content of P in the substance
+	 * @param S The content of S in the substance
+	 * @param FeTotal The content of Fe (total) in the substance
+	 * @param workerID ID of the employee who performed the chemical analysis
+	 * @param dateTime Date and time of chemical analysis
+	 * @param Additional Addition information about chemical composition
+	 * @return true if note was delete</br>
+	 * 		   false if get error (note was't delete)
+	 */
 	public Boolean addComposition(float MgO, float CaO, float Al2O3, float SiO2, float P, float S, float FeTotal, int workerID, String dateTime, String Additional) {
 		try {
 			PreparedStatement pstmt = connection.prepareStatement (
@@ -1326,6 +1345,15 @@ public class DB {
 		return getResult("SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker WHERE s.id = "+idPass+";", 13)[0];
 	}
 	
+	/**
+	 * Get infromation about stacks
+	 * with filter parameters
+	 * @param stackNumber (Object) number of stack
+	 * @param worker (Object) worker full name
+	 * @param startDate	(Object) String of start date of formation stack
+	 * @param finishDate (Object) String of finish date of formation stack
+	 * @return Object array with result data from DB
+	 */
 	public Object[][] getStacksWithFilter(Object stackNumber, Object worker, Object startDate, Object finishDate) {
 		String request = "SELECT s.id, s.StackNumber, c.id, c.MgO, c.CaO, c.Al2O3, c.SiO2, c.P, c.S, c.`Fe total`, w.FullName, c.FixationTime, s.fixedtime FROM stacks s INNER JOIN materialcomposition c ON s.composition = c.id INNER JOIN workers w ON c.Worker = w.idWorker ";
 		String filter = "";

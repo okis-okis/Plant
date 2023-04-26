@@ -1,11 +1,11 @@
 package plant.controllers;
 
 import java.net.URL;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,17 +14,22 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import plant.Main;
@@ -34,41 +39,116 @@ public class ComplexController implements Initializable{
 	private Scene scene;
 	private Parent root;
 	private UpdateThread updateThread;
+	private XYChart.Series<String, Number> realLine, laboratoryLine, minLine, maxLine;	
+	private SimpleDateFormat dateFormat;
+	private Date date;
 	
-	@FXML AreaChart areachart;
+	private double mouseX = 0, mouseY = 0;
+	
+	@FXML LineChart lineChart;
 	@FXML PieChart piechart;
 	@FXML Button lampManageButton;
 	@FXML Rectangle infraRedLight;
 	@FXML Label temperature1, humidity1, temperature2, humidity2;
-
+	@FXML Spinner chartValue;
+	@FXML AnchorPane mainAnchor, footerPanel;
+    
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		    XYChart.Series laboratoryValue= new XYChart.Series();
-	        laboratoryValue.setName("Лаборатория");
-	        Random rand = new Random();
-	        for(int i=0;i<3600;i+=500) {
-	        	laboratoryValue.getData().add(new XYChart.Data(i, rand.nextInt(10)+10));
-	        }
-	        
-	        XYChart.Series realValue = new XYChart.Series();
-	        realValue.setName("Реальное значение");
-	        for(int i=0;i<3600;i+=100) {
-	        	realValue.getData().add(new XYChart.Data(i, rand.nextInt(20)+5));
-	        }
-	        
-			areachart.setTitle("Основность аглошихты");
-	        areachart.getData().addAll(laboratoryValue, realValue);
-	        
-	        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList( 
-	        		   new PieChart.Data("Норма", 83), 
-	        		   new PieChart.Data("Ошибка", 17));
-	        piechart.setData(pieChartData);
-	        
-	        pieChartData.get(0).getNode().setStyle("-fx-pie-color: green");
-	        pieChartData.get(1).getNode().setStyle("-fx-pie-color: red");
-	        
-	        updateThread = new UpdateThread();
-	        updateThread.start();
+		
+		SpinnerValueFactory<Double> valueFactory = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 3.5, 1.5);
+		((DoubleSpinnerValueFactory) valueFactory).setAmountToStepBy(0.01);
+		
+		chartValue.setValueFactory(valueFactory);
+		
+		BarChart<String, Number> chart = new BarChart<>(new CategoryAxis(), new NumberAxis());
+
+		realLine = new XYChart.Series<>();
+		realLine.setName("Реальное");
+	    
+		laboratoryLine = new XYChart.Series<>();
+		laboratoryLine.setName("Лабораторное");
+		
+		minLine = new XYChart.Series<>();
+		minLine.setName("Минимальное значение");
+		
+		maxLine = new XYChart.Series<>();
+		maxLine.setName("Максимальное значение");
+		
+		lineChart.getData().addAll(realLine, laboratoryLine, minLine, maxLine);
+		
+		Line verticleLine = new Line();
+        verticleLine.setStrokeWidth(3);
+        Line horizontalLine = new Line();
+        horizontalLine.setStrokeWidth(3);
+
+        Pane pane = new Pane(verticleLine, horizontalLine);
+
+        StackPane stackPane = new StackPane(lineChart, pane);
+        
+        stackPane.setPrefHeight(300);
+        
+//        AnimationTimer loop = new AnimationTimer()
+//        {
+//            @Override
+//            public void handle(long now)
+//            {
+//                verticleLine.setStartY(0);
+//                verticleLine.setEndY(pane.getHeight());
+//                verticleLine.setEndX(mouseX);
+//                verticleLine.setStartX(mouseX);
+//
+//                horizontalLine.setStartX(0);
+//                horizontalLine.setEndX(pane.getWidth());
+//                horizontalLine.setEndY(mouseY);
+//                horizontalLine.setStartY(mouseY);
+//            }
+//        };
+//        
+//        pane.addEventFilter(MouseEvent.ANY, event -> {
+//            mouseX = event.getSceneX();
+//            mouseY = stackPane.getPrefHeight()-(mainAnchor.getHeight()-event.getSceneY());
+//            if(mouseY>0) {
+//            	mouseY=0;
+//            }
+//            System.out.println(mouseY);
+//
+//            loop.start();
+//        });
+        
+        AnchorPane.setLeftAnchor(stackPane, 0.0);
+        AnchorPane.setBottomAnchor(stackPane, 0.0);
+        AnchorPane.setRightAnchor(stackPane, 300.0);
+        
+        footerPanel.getChildren().add(stackPane);
+		
+		dateFormat = new SimpleDateFormat("HH:mm:ss");
+		
+	    ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList( 
+     		   new PieChart.Data("Норма", 83), 
+     		   new PieChart.Data("Ошибка", 17));
+	    piechart.setData(pieChartData);
+	     
+	    pieChartData.get(0).getNode().setStyle("-fx-pie-color: green");
+	    pieChartData.get(1).getNode().setStyle("-fx-pie-color: red");
+     
+		updateThread = new UpdateThread();
+        updateThread.start();
+	}
+	
+	public void sendToChart() {
+		date = new Date();
+        addChartPoint(dateFormat.format(date), (Double)chartValue.getValue());
+	}
+	
+	public void addChartPoint(String date, Number value) {
+		realLine.getData().add(new XYChart.Data(date, value));
+		
+		minLine.getData().add(new XYChart.Data(date, 1.5));
+		maxLine.getData().add(new XYChart.Data(date, 2.5));
+		
+		if(realLine.getData().size()%3==0)
+			laboratoryLine.getData().add(new XYChart.Data(date, value));
 	}
 	
 	public void lampManage(ActionEvent event) {
@@ -136,7 +216,7 @@ public class ComplexController implements Initializable{
 								lampManageButton.setText("Включить");
 					   		}
 					   	}catch(Exception e) {
-					   		Main.getLogger().error("Возникла ошибка с определением состояния ИК лампы");
+					   		Main.getLogger().error("An error occurred while detecting the status of the IR lamp");
 					   	}
 					});
 					if(!stop) {

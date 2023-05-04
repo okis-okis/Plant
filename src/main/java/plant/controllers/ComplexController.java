@@ -1,10 +1,11 @@
 package plant.controllers;
 
-import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -17,22 +18,26 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
-import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -69,7 +74,7 @@ public class ComplexController implements Initializable{
 	 * Special thread for update data from complex
 	 * @see UpdateThread
 	 */
-	private UpdateThread updateThread;
+	private static UpdateThread updateThread;
 	
 	/**
 	 * Line for LineChart for basicity display
@@ -154,11 +159,18 @@ public class ComplexController implements Initializable{
      */
     int counter;
     
+    SendingThread sendingSampleToComplex;
+    
     /**
      * Special formatter for lineChart point output
      * @see DateTimeFormatter
      */
     DateTimeFormatter formatter;
+    
+    /**
+     * Series line for lineChart
+     */
+    XYChart.Series sample, dataComplex;
     
     /**
      * Complex charts for real (current) and average basicity display
@@ -264,6 +276,7 @@ public class ComplexController implements Initializable{
 	 */
 	@FXML Rectangle standardModel;
 	
+	@FXML AreaChart xraySpectrum;
 	
 	/**
 	 * Initialization main window and charts
@@ -306,8 +319,23 @@ public class ComplexController implements Initializable{
 	    stackedInit();
 	    
 	    date = LocalDateTime.of(2023, 3 , 1, 0, 0, 0);
+	    
+	    try {
+	    	updateThread.stop();
+	    }catch(Exception e) {
+	    	Main.getLogger().info(e.getMessage());
+	    }
+	    
+	    sample = new XYChart.Series();
+	    sample.setName("Образец 1");	    		
+	    xraySpectrum.getData().add(0, sample);
+	    
+	    dataComplex = new XYChart.Series();
+	    dataComplex.setName("Результат");	    		
+	    xraySpectrum.getData().add(1, dataComplex);
+	    
 		updateThread = new UpdateThread();
-        updateThread.start();
+	    updateThread.start();
 	}
 	
 	/**
@@ -725,7 +753,122 @@ public class ComplexController implements Initializable{
 			Main.getLogger().info("Conveyor stop");
 		}
 	}
+	
+	/**
+	 * Using the first sample of the composition for analysis
+	 */
+	public void firstSample() {
+		List<XYChart.Data> elements = new ArrayList<XYChart.Data>();
+		
+		elements.add(new XYChart.Data(1.2, 3200));		//Mg
+		elements.add(new XYChart.Data(2.0, 2000));		//P
+		elements.add(new XYChart.Data(5.9, 8000));		//Mn
+		elements.add(new XYChart.Data(6.4, 3000));		//Fe
+		elements.add(new XYChart.Data(7.4, 3500));		//Ni
+		elements.add(new XYChart.Data(8.0, 7000));		//Cu
+		elements.add(new XYChart.Data(13.4, 2500));		//Rb
+		elements.add(new XYChart.Data(17.5, 7500));		//Mo
+		
+		sampleChart(elements);
+	}
+	
+	/**
+	 * Using the second sample of the composition for analysis
+	 */
+	public void secondSample() {
+		List<XYChart.Data> elements = new ArrayList<XYChart.Data>();
+		
+		elements.add(new XYChart.Data(1.2, 5000));	//Mg
+		elements.add(new XYChart.Data(2.0, 6500));	//P
+		elements.add(new XYChart.Data(5.9, 4000));	//Mn
+		elements.add(new XYChart.Data(6.4, 6000));	//Fe
+		elements.add(new XYChart.Data(8.0, 2000));	//Cu
+		elements.add(new XYChart.Data(17.5, 4500));	//Mo
+		
+		sampleChart(elements);
+	}
+	
+	/**
+	 * Using the third sample of the composition for analysis
+	 */
+	public void thirdSample() {
+		List<XYChart.Data> elements = new ArrayList<XYChart.Data>();
+		
+		elements.add(new XYChart.Data(1.2, 4000));	//Mg
+		elements.add(new XYChart.Data(2.0, 2500));	//P
+		elements.add(new XYChart.Data(5.9, 5500));	//Mn
+		elements.add(new XYChart.Data(6.4, 8000));	//Fe
+		elements.add(new XYChart.Data(8.0, 5400));	//Cu
+		
+		sampleChart(elements);
+	}
+	
+	/**
+	 * Filling the chemical composition with random 
+	 * values with changes at specified energy levels
+	 * @param elements List with values of data 
+	 * for line chart for manual changing line parameters
+	 */
+	private void sampleChart(List<XYChart.Data> elements) {
+		sample.getData().clear();
 
+		for(float f=0;f<25.0;f+=0.1) {
+			Boolean found = false;
+			for(XYChart.Data element: elements) {
+				float energyLevel = ((Double)element.getXValue()).floatValue();
+				if(energyLevel>f+0.95&&energyLevel<=f+1.05){
+					sample.getData().add(element);
+					//elements.remove(element);
+					found = true;
+					break;
+				}
+			}	
+			if(!found) {
+				sample.getData().add(new XYChart.Data(f+1, (int)Math.floor(Math.random() * (300 - 1))));
+			}
+		}
+	}
+
+	/**
+	 * Sending data of sample to system of complex
+	 */
+	public void sendSample() {
+		
+		if(sendingSampleToComplex != null && sendingSampleToComplex.isAlive()) {
+			
+			Alert sampleError = new Alert(AlertType.ERROR);
+			
+			sampleError.setTitle("Ошибка отправки данных.");
+			sampleError.setHeaderText("Данные уже находятся в процессе отправки!");
+			sampleError.show();
+			
+			Main.getLogger().error("Error sending data. Data is already in the process of being sent.");
+			
+			return;
+		}
+		
+		Main.getLogger().info("Target data send button pressed");
+		if(!xraySpectrum.getData().isEmpty()) {
+			Main.getLogger().info("Sending data");
+			
+			if(sendingSampleToComplex == null) {
+				sendingSampleToComplex = new SendingThread();
+			}
+			
+			XYChart.Series sample = (Series) xraySpectrum.getData().get(0);
+			sendingSampleToComplex.run(sample);
+		}else {
+			Alert sampleError = new Alert(AlertType.ERROR);
+			
+			sampleError.setTitle("Ошибка получения эталона");
+			sampleError.setHeaderText("Вы не добавили эталон.");
+			sampleError.setContentText("Нет данных для отправки на комплекс. Вы не выбрали эталонный график!");
+			sampleError.show();
+			
+			Main.getLogger().error("Error sending data. There is no standard data.");
+		}
+	}
+	
 	/**
 	 * Thread for update data on modeling window
 	 * @author olegk
@@ -766,7 +909,6 @@ public class ComplexController implements Initializable{
 						   		setTemperature2("nan");
 						   	}
 						   	try {
-						   		//Main.getLogger().info("LED: "+arr[4]);
 						   		if(arr[4].equals("LED+")) {
 						   			infraRedLight.setVisible(true);
 									lampManageButton.setText("Выключить");
@@ -778,7 +920,6 @@ public class ComplexController implements Initializable{
 						   		Main.getLogger().error("An error occurred while detecting the status of the IR lamp");
 						   	}
 						   	try {
-						   		//Main.getLogger().info(arr[5]);
 						   		if(arr[5].equals("StandardState+")) {
 						   			standardModel.setVisible(true);
 						   			standardManage.setText("Убрать эталон");
@@ -810,8 +951,11 @@ public class ComplexController implements Initializable{
 		  public void run(Boolean mode) {
 			try {	
 				
-				updateThread.stop = true;
-				updateThread.interrupt();
+				try {
+			    	updateThread.stop();
+			    }catch(Exception e) {
+			    	Main.getLogger().info(e.getMessage());
+			    }
 				
 				int counter = 0;
 				while(counter<5) {
@@ -865,8 +1009,11 @@ public class ComplexController implements Initializable{
 		String result;
 		  public void run(Boolean mode) {
 			try {	
-				updateThread.stop = true;
-				updateThread.interrupt();
+				try {
+			    	updateThread.stop();
+			    }catch(Exception e) {
+			    	Main.getLogger().info(e.getMessage());
+			    }
 				
 				int counter = 0;
 				while(counter<5) {
@@ -877,7 +1024,6 @@ public class ComplexController implements Initializable{
 					}
 					sleep(2000);
 					result = Main.getSerial().getResult();
-					result = result.substring(0, result.length()-1);
 					Main.getLogger().info("Result: "+result);
 					if(result.equals("Standard+")||result.equals("Standard-")) {
 						Platform.runLater(() -> {
@@ -951,6 +1097,158 @@ public class ComplexController implements Initializable{
 				});
 				realLineChart.setAnimated(true);
 			}
+		}
+	}
+	
+	/**
+	 * Stream for sending data to the detector of the complex
+	 * @author olegk
+	 */
+	public class SendingThread extends Thread  {
+		public void run(XYChart.Series sample) {
+			
+			updateThread.stop();
+			
+			dataComplex.getData().clear();
+			
+			//pause(2);
+			
+			for(float f=1;f<25.0;f+=0.1)
+				dataComplex.getData().add(new XYChart.Data(f, 0));
+			
+			//ProcessThread process = new ProcessThread();
+			//process.run();
+			Main.getLogger().info("Sending thread is run!");
+			
+			for(int packet = 0;packet<14;packet+=5){
+				
+				String sendPacket = "1";
+				for(int channel = 1;channel<=5;channel++)
+					sendPacket += Main.getSerial().generateInpulses(packet+channel, (int)((XYChart.Data)sample.getData().get(packet+channel)).getYValue());
+					//Main.getLogger().info("Channel: "+packet+channel+" | Impulses: "+((XYChart.Data)sample.getData().get(packet+channel)).getYValue());
+				
+				Main.getLogger().info("Packet being sent: "+sendPacket);
+				
+				(new SendingPacket()).run(sendPacket);
+			}
+			
+			pause(1);
+			
+//			for(int i=0;i<sample.getData().size();i++)
+//				Main.getLogger().info("Channel: "+i+" | Impulses: "+((XYChart.Data)sample.getData().get(i)).getYValue());
+			
+			updateThread = new UpdateThread();
+	        updateThread.start();
+	        
+			Main.getLogger().info("All data has been sent.");
+		}
+		
+		private void pause(double sec) {
+			try {
+				sleep((int)(sec * 1000));
+			} catch (InterruptedException e) {
+				Main.getLogger().error(e.getMessage());
+			}
+		}
+	}
+	
+	/**
+	 * The thread of sending a data packet to generate pulses	
+	 * @author olegk
+	 *
+	 */
+	public class SendingPacket extends Thread{
+		public void run(String packet) {
+			Main.getLogger().info("Running sending packet thread");
+			
+			Main.getSerial().executeCommand(packet);
+			String result = "";
+			
+			for(int loopCounter = 0;loopCounter<5;loopCounter++){
+				
+				pause(5);
+				
+				result = Main.getSerial().getResult();
+				
+				Main.getLogger().info("Message from complex: "+result);
+				
+				if(result.contains("ImpulsesProcessing")) {
+					Main.getLogger().info("The complex started working with pulses");
+					break;
+				}
+				
+				Main.getSerial().executeCommand(packet);
+			}			
+			
+			while(!result.contains("END")) {
+				result = Main.getSerial().getResult();
+				if(result.length()>8&&result.charAt(0)=='&'&&result.charAt(4)=='$') {
+					
+					try {
+						int getChannel = Integer.valueOf(result.substring(1, 4)),
+							getImpulses = Integer.valueOf(result.substring(5, 9));
+						
+						Main.getLogger().info("Channel: "+getChannel);
+						Main.getLogger().info("Impulses: "+getImpulses);
+						
+						((XYChart.Data)dataComplex.getData().get(getChannel)).setYValue(getImpulses);
+					}catch(Exception e) {
+						Main.getLogger().info(e.getMessage());
+					}
+				}
+				pause(2);
+			}
+		}
+		
+		private void pause(double sec) {
+			try {
+				sleep((int)(sec * 1000));
+			} catch (InterruptedException e) {
+				Main.getLogger().error(e.getMessage());
+			}
+		}
+	}
+	
+	/**
+	 * Stream for sending data to the detector of the complex
+	 * @author olegk
+	 */
+	public class ProcessThread extends Thread  {
+		public void run() {
+			Main.getLogger().info("Process thread is run!");
+			
+			AnchorPane waitPane = new AnchorPane();
+			
+			ProgressIndicator PI=new ProgressIndicator();  
+	        PI.setMinHeight(150);
+	        PI.setMinWidth(150);
+            
+            AnchorPane.setTopAnchor(PI, 20.0);
+            AnchorPane.setLeftAnchor(PI, 0.0);
+            AnchorPane.setRightAnchor(PI, 0.0);
+            AnchorPane.setBottomAnchor(PI, 0.0);
+            
+	        waitPane.getChildren().add(PI);
+	        
+			Label messageProcess = new Label("Процесс отравки данных");
+			messageProcess.setWrapText(true);
+			messageProcess.setAlignment(Pos.BASELINE_CENTER);
+			
+			AnchorPane.setTopAnchor(messageProcess, 5.0);
+            AnchorPane.setLeftAnchor(messageProcess, 0.0);
+            AnchorPane.setRightAnchor(messageProcess, 0.0);
+            
+	        waitPane.getChildren().add(messageProcess);
+			
+	        Scene scene = new Scene(waitPane,200,200);  
+	        Stage stage = new Stage();
+	        stage.setScene(scene);  
+	        stage.setTitle("Отправка данных на устройство");  
+	        stage.show();  
+	        stage.setMaxHeight(250);
+	        stage.setMinHeight(250);
+	        stage.setMinWidth(250);
+	        stage.setMaxWidth(250);
 		}
 	}
 	

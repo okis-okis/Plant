@@ -177,6 +177,28 @@ public class Serial implements SerialPortDataListener {
 	  return temp.trim();
   }
   
+  public String generateInpulses(int channel, int count) {
+	  String command = "&";
+	  if(channel>=0&&channel<=255) {
+		  command += String.format("%03d", channel);
+	  }else {
+		  Main.getLogger().error("You have entered the wrong channel. Channel range from 0 to 255.");
+		  return "";
+	  }
+	  
+	  command += "$";
+	  
+	  if(count>=0&&count<=9999) {
+		  command += String.format("%04d", count);
+	  }else {
+		  Main.getLogger().error("You entered the wrong number of pulses. The range of number of pulses is from 0 to 999.");
+		  return "";
+	  }
+	  command+='|';
+	  
+	  return command;	  
+  }
+  
   public void executeCommand(String command) {
 	  try {
 		  sendStringToComm(command);

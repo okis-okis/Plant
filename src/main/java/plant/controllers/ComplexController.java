@@ -1,24 +1,35 @@
 package plant.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
+
+import javax.imageio.ImageIO;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.print.PageLayout;
+import javafx.print.PageOrientation;
+import javafx.print.Paper;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
@@ -28,7 +39,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -38,11 +49,17 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import plant.Main;
 
@@ -277,6 +294,10 @@ public class ComplexController implements Initializable{
 	@FXML Rectangle standardModel;
 	
 	@FXML AreaChart xraySpectrum;
+	
+	@FXML VBox elementsInfo;
+	
+	@FXML AnchorPane spectrumPane;
 	
 	/**
 	 * Initialization main window and charts
@@ -618,7 +639,7 @@ public class ComplexController implements Initializable{
 	 * @param event ActionEvent from standard manage button
 	 */
 	public void actionStandard(ActionEvent event) {
-		StandardThread standardT = new StandardThread();
+		SampleThread standardT = new SampleThread();
 		standardT.run(standardManage.getText().equals("Установить эталон"));
 	}
 	
@@ -764,10 +785,6 @@ public class ComplexController implements Initializable{
 		elements.add(new XYChart.Data(2.0, 2000));		//P
 		elements.add(new XYChart.Data(5.9, 8000));		//Mn
 		elements.add(new XYChart.Data(6.4, 3000));		//Fe
-		elements.add(new XYChart.Data(7.4, 3500));		//Ni
-		elements.add(new XYChart.Data(8.0, 7000));		//Cu
-		elements.add(new XYChart.Data(13.4, 2500));		//Rb
-		elements.add(new XYChart.Data(17.5, 7500));		//Mo
 		
 		sampleChart(elements);
 	}
@@ -783,7 +800,6 @@ public class ComplexController implements Initializable{
 		elements.add(new XYChart.Data(5.9, 4000));	//Mn
 		elements.add(new XYChart.Data(6.4, 6000));	//Fe
 		elements.add(new XYChart.Data(8.0, 2000));	//Cu
-		elements.add(new XYChart.Data(17.5, 4500));	//Mo
 		
 		sampleChart(elements);
 	}
@@ -798,7 +814,6 @@ public class ComplexController implements Initializable{
 		elements.add(new XYChart.Data(2.0, 2500));	//P
 		elements.add(new XYChart.Data(5.9, 5500));	//Mn
 		elements.add(new XYChart.Data(6.4, 8000));	//Fe
-		elements.add(new XYChart.Data(8.0, 5400));	//Cu
 		
 		sampleChart(elements);
 	}
@@ -812,20 +827,32 @@ public class ComplexController implements Initializable{
 	private void sampleChart(List<XYChart.Data> elements) {
 		sample.getData().clear();
 
-		for(float f=0;f<25.0;f+=0.1) {
+		for(float f=1;f<7.0;f+=0.1) {
 			Boolean found = false;
+			String elementTitle = Main.getDB().getElementTitleByKa(f);
 			for(XYChart.Data element: elements) {
 				float energyLevel = ((Double)element.getXValue()).floatValue();
-				if(energyLevel>f+0.95&&energyLevel<=f+1.05){
+				if(energyLevel>f-0.05&&energyLevel<=f+0.05){
+					element.setNode(new Label(elementTitle));
 					sample.getData().add(element);
-					//elements.remove(element);
 					found = true;
 					break;
 				}
 			}	
 			if(!found) {
-				sample.getData().add(new XYChart.Data(f+1, (int)Math.floor(Math.random() * (300 - 1))));
+				XYChart.Data data = new XYChart.Data(f, (int)Math.floor(Math.random() * (300 - 1)));
+				if((int)data.getYValue()>=500 && !elementTitle.isEmpty()) {
+					data.setNode(new Label(elementTitle));
+				}
+				sample.getData().add(data);
 			}
+			
+			XYChart.Data dataTooltip = (Data) sample.getData().get(sample.getData().size()-1);
+			String tooltip = "Импульсы: "+dataTooltip.getYValue().toString() + "\n" + dataTooltip.getXValue()+" кэВ";
+			if(!elementTitle.equals("")) {
+				tooltip+="\nЭлемент: "+elementTitle;
+			}
+	        Tooltip.install(dataTooltip.getNode(), new Tooltip(tooltip));
 		}
 	}
 
@@ -855,8 +882,7 @@ public class ComplexController implements Initializable{
 				sendingSampleToComplex = new SendingThread();
 			}
 			
-			XYChart.Series sample = (Series) xraySpectrum.getData().get(0);
-			sendingSampleToComplex.run(sample);
+			sendingSampleToComplex.start();
 		}else {
 			Alert sampleError = new Alert(AlertType.ERROR);
 			
@@ -869,6 +895,69 @@ public class ComplexController implements Initializable{
 		}
 	}
 	
+	/**
+	 * Print chart with chemical composition and other info 
+	 */
+	public void printChart() {	   
+		
+		Printer printer = Printer.getDefaultPrinter();
+		PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+        
+		PrinterJob job = PrinterJob.createPrinterJob();
+		if (job != null) {
+			boolean successPrintDialog = job.showPrintDialog(Main.getComplexStage().getOwner());
+			if(successPrintDialog){
+				boolean success = job.printPage(pageLayout, spectrumPane);
+				if (success) {
+            	  job.endJob();
+				}
+			}
+		}
+		
+//		ImageView imageView =new ImageView(spectrumPane.snapshot(null, null));
+//        Printer printer = Printer.getDefaultPrinter();
+//        PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+//        double scaleX = pageLayout.getPrintableWidth() / imageView.getBoundsInParent().getWidth();
+//        double scaleY = pageLayout.getPrintableHeight() / imageView.getBoundsInParent().getHeight();
+//        imageView.getTransforms().add(new Scale(scaleX, scaleY));
+//
+//        PrinterJob job = PrinterJob.createPrinterJob();
+//        if (job != null) {
+//            boolean successPrintDialog = job.showPrintDialog(Main.getComplexStage().getOwner());
+//            if(successPrintDialog){
+//                boolean success = job.printPage(pageLayout,imageView);
+//                if (success) {
+//                    job.endJob();
+//                }
+//            }
+//        }
+	}
+	
+	/**
+	 * Save chart with chemical composition and other info as PNG image
+	 */
+	public void saveChart() {
+		WritableImage image = spectrumPane.snapshot(null, null);
+	    
+	    FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("Сохранение результата");     
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
+	    
+        File file = fileChooser.showOpenDialog(Main.getComplexStage());
+        
+	    try {
+			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
+		} catch (IOException e) {
+			Main.getLogger().error(e.getMessage());
+		}
+	}
+	
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
+
 	/**
 	 * Thread for update data on modeling window
 	 * @author olegk
@@ -1005,7 +1094,7 @@ public class ComplexController implements Initializable{
 	 * @author olegk
 	 * @see Thread
 	 */
-	public class StandardThread extends Thread  {
+	public class SampleThread extends Thread  {
 		String result;
 		  public void run(Boolean mode) {
 			try {	
@@ -1105,37 +1194,62 @@ public class ComplexController implements Initializable{
 	 * @author olegk
 	 */
 	public class SendingThread extends Thread  {
-		public void run(XYChart.Series sample) {
+		
+		int[] randomChannels;
+		
+		@Override
+		public void run() {
 			
 			updateThread.stop();
 			
 			dataComplex.getData().clear();
 			
-			//pause(2);
+			pause(2);
 			
-			for(float f=1;f<25.0;f+=0.1)
-				dataComplex.getData().add(new XYChart.Data(f, 0));
+			Platform.runLater(() -> {
+				for(float f=1;f<7.0;f+=0.1) {
+					Data<Number, Number> data = new XYChart.Data(f, 0);
+					dataComplex.getData().add(data);
+				}
+			});
 			
-			//ProcessThread process = new ProcessThread();
-			//process.run();
+			ProcessThread process = new ProcessThread();
+			process.start();
+			
 			Main.getLogger().info("Sending thread is run!");
 			
-			for(int packet = 0;packet<14;packet+=5){
-				
-				String sendPacket = "1";
-				for(int channel = 1;channel<=5;channel++)
-					sendPacket += Main.getSerial().generateInpulses(packet+channel, (int)((XYChart.Data)sample.getData().get(packet+channel)).getYValue());
-					//Main.getLogger().info("Channel: "+packet+channel+" | Impulses: "+((XYChart.Data)sample.getData().get(packet+channel)).getYValue());
+			initRandomChannels();
+			
+			for(int packet = 0;packet<randomChannels.length;packet+=20){
+				String sendPacket = getPacket(packet);
 				
 				Main.getLogger().info("Packet being sent: "+sendPacket);
 				
-				(new SendingPacket()).run(sendPacket);
+				Main.getSerial().executeCommand(sendPacket);
+				String result = "";
+				
+				for(int loopCounter = 0;loopCounter<5;loopCounter++){
+					
+					pause(10);
+					
+					result = Main.getSerial().getResult();
+					
+					Main.getLogger().info("Message from complex: "+result);
+					
+					if(result.contains("ImpulsesProcessing")) {
+						Main.getLogger().info("The complex started working with pulses");
+						break;
+					}
+					
+					Main.getSerial().executeCommand(sendPacket);
+				}			
+				
+				readResultPackets();
+				
+				pause(1);
 			}
 			
 			pause(1);
-			
-//			for(int i=0;i<sample.getData().size();i++)
-//				Main.getLogger().info("Channel: "+i+" | Impulses: "+((XYChart.Data)sample.getData().get(i)).getYValue());
 			
 			updateThread = new UpdateThread();
 	        updateThread.start();
@@ -1143,42 +1257,11 @@ public class ComplexController implements Initializable{
 			Main.getLogger().info("All data has been sent.");
 		}
 		
-		private void pause(double sec) {
-			try {
-				sleep((int)(sec * 1000));
-			} catch (InterruptedException e) {
-				Main.getLogger().error(e.getMessage());
-			}
-		}
-	}
-	
-	/**
-	 * The thread of sending a data packet to generate pulses	
-	 * @author olegk
-	 *
-	 */
-	public class SendingPacket extends Thread{
-		public void run(String packet) {
-			Main.getLogger().info("Running sending packet thread");
-			
-			Main.getSerial().executeCommand(packet);
+		/**
+		 * Read result package from serial port for detect current state of analyzer
+		 */
+		private void readResultPackets() {
 			String result = "";
-			
-			for(int loopCounter = 0;loopCounter<5;loopCounter++){
-				
-				pause(5);
-				
-				result = Main.getSerial().getResult();
-				
-				Main.getLogger().info("Message from complex: "+result);
-				
-				if(result.contains("ImpulsesProcessing")) {
-					Main.getLogger().info("The complex started working with pulses");
-					break;
-				}
-				
-				Main.getSerial().executeCommand(packet);
-			}			
 			
 			while(!result.contains("END")) {
 				result = Main.getSerial().getResult();
@@ -1191,12 +1274,68 @@ public class ComplexController implements Initializable{
 						Main.getLogger().info("Channel: "+getChannel);
 						Main.getLogger().info("Impulses: "+getImpulses);
 						
-						((XYChart.Data)dataComplex.getData().get(getChannel)).setYValue(getImpulses);
+						Platform.runLater(() -> {
+							((XYChart.Data)dataComplex.getData().get(getChannel)).setYValue((int)((XYChart.Data)dataComplex.getData().get(getChannel)).getYValue()+getImpulses);
+						});
 					}catch(Exception e) {
 						Main.getLogger().info(e.getMessage());
 					}
 				}
 				pause(2);
+			}
+		}
+		
+		/**
+		 * Forming packet with channels and impulses for sending to complex
+		 * @param packet Specifying the package number (the index from which the countdown will start)
+		 * @return String with packet data
+		 */
+		private String getPacket(int packet) {
+			String sendPacket = "1";
+			for(int channel = 1;channel<=20;channel++) {
+				try { 
+					if(randomChannels[packet+channel]>0) {
+						int impulses = (int)((XYChart.Data)sample.getData().get(randomChannels[packet+channel])).getYValue();
+						if(impulses>500) {
+							for(int i = 0;i<impulses/500;i++)
+								sendPacket += Main.getSerial().generateInpulses(randomChannels[packet+channel], 500);
+							if(impulses%500 != 0) {
+								sendPacket += Main.getSerial().generateInpulses(randomChannels[packet+channel], impulses%500);
+							}
+						}else {
+							sendPacket += Main.getSerial().generateInpulses(randomChannels[packet+channel], impulses);
+						}
+					}
+				}catch(Exception e) {
+					Main.getLogger().error(e.getMessage());
+				}
+			}
+			return sendPacket;
+		}
+		
+		private void initRandomChannels() {
+			randomChannels = new int[sample.getData().size()];
+			
+			for(int i=1;i<sample.getData().size();i++) {
+				int channel = randInt(1, sample.getData().size());
+				if(i-1>0) {
+					Boolean found = false;
+					for(int j=0;j<i;j++) {
+						if(randomChannels[j] == channel) {
+							found = true;
+							break;
+						}
+					}
+					if(found) {
+						i--;
+						continue;
+					}
+				}
+				try {
+					randomChannels[i-1] = channel;
+				}catch(Exception e) {
+					Main.getLogger().error(e.getMessage());
+				}
 			}
 		}
 		
@@ -1206,6 +1345,36 @@ public class ComplexController implements Initializable{
 			} catch (InterruptedException e) {
 				Main.getLogger().error(e.getMessage());
 			}
+		}
+		
+		/**
+		 * Returns a pseudo-random number between min and max, inclusive.
+		 * The difference between min and max can be at most
+		 * <code>Integer.MAX_VALUE - 1</code>.
+		 *
+		 * @param min Minimum value
+		 * @param max Maximum value.  Must be greater than min.
+		 * @return Integer between min and max, inclusive.
+		 * @see java.util.Random#nextInt(int)
+		 */
+		public static int randInt(int min, int max) {
+
+		    // NOTE: This will (intentionally) not run as written so that folks
+		    // copy-pasting have to think about how to initialize their
+		    // Random instance.  Initialization of the Random instance is outside
+		    // the main scope of the question, but some decent options are to have
+		    // a field that is initialized once and then re-used as needed or to
+		    // use ThreadLocalRandom (if using at least Java 1.7).
+		    // 
+		    // In particular, do NOT do 'Random rand = new Random()' here or you
+		    // will get not very good / not very random results.
+		    Random rand = new Random();
+
+		    // nextInt is normally exclusive of the top value,
+		    // so add 1 to make it inclusive
+		    int randomNum = rand.nextInt((max - min) + 1) + min;
+
+		    return randomNum;
 		}
 	}
 	
@@ -1217,38 +1386,40 @@ public class ComplexController implements Initializable{
 		public void run() {
 			Main.getLogger().info("Process thread is run!");
 			
-			AnchorPane waitPane = new AnchorPane();
-			
-			ProgressIndicator PI=new ProgressIndicator();  
-	        PI.setMinHeight(150);
-	        PI.setMinWidth(150);
-            
-            AnchorPane.setTopAnchor(PI, 20.0);
-            AnchorPane.setLeftAnchor(PI, 0.0);
-            AnchorPane.setRightAnchor(PI, 0.0);
-            AnchorPane.setBottomAnchor(PI, 0.0);
-            
-	        waitPane.getChildren().add(PI);
-	        
-			Label messageProcess = new Label("Процесс отравки данных");
-			messageProcess.setWrapText(true);
-			messageProcess.setAlignment(Pos.BASELINE_CENTER);
-			
-			AnchorPane.setTopAnchor(messageProcess, 5.0);
-            AnchorPane.setLeftAnchor(messageProcess, 0.0);
-            AnchorPane.setRightAnchor(messageProcess, 0.0);
-            
-	        waitPane.getChildren().add(messageProcess);
-			
-	        Scene scene = new Scene(waitPane,200,200);  
-	        Stage stage = new Stage();
-	        stage.setScene(scene);  
-	        stage.setTitle("Отправка данных на устройство");  
-	        stage.show();  
-	        stage.setMaxHeight(250);
-	        stage.setMinHeight(250);
-	        stage.setMinWidth(250);
-	        stage.setMaxWidth(250);
+			Platform.runLater(() -> {
+				AnchorPane waitPane = new AnchorPane();
+				
+				ProgressIndicator PI=new ProgressIndicator();  
+		        PI.setMinHeight(150);
+		        PI.setMinWidth(150);
+	            
+	            AnchorPane.setTopAnchor(PI, 20.0);
+	            AnchorPane.setLeftAnchor(PI, 0.0);
+	            AnchorPane.setRightAnchor(PI, 0.0);
+	            AnchorPane.setBottomAnchor(PI, 0.0);
+	            
+		        waitPane.getChildren().add(PI);
+		        
+				Label messageProcess = new Label("Процесс отравки данных");
+				messageProcess.setWrapText(true);
+				messageProcess.setAlignment(Pos.BASELINE_CENTER);
+				
+				AnchorPane.setTopAnchor(messageProcess, 5.0);
+	            AnchorPane.setLeftAnchor(messageProcess, 0.0);
+	            AnchorPane.setRightAnchor(messageProcess, 0.0);
+	            
+		        waitPane.getChildren().add(messageProcess);
+				
+		        Scene scene = new Scene(waitPane,200,200);  
+		        Stage stage = new Stage();
+		        stage.setScene(scene);  
+		        stage.setTitle("Отправка данных на устройство");  
+		        stage.show();  
+		        stage.setMaxHeight(250);
+		        stage.setMinHeight(250);
+		        stage.setMinWidth(250);
+		        stage.setMaxWidth(250);
+			});
 		}
 	}
 	

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
@@ -1143,10 +1144,27 @@ public class DB {
 			
 			return executeStatement(pstmt);
 		}catch(Exception e) {
-			System.out.println("Database error: "+e);
+			Main.getLogger().error(e.getMessage());
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Get element title by Ka energy line
+	 * @param Ka energy line (for example, 2.01)
+	 * @return Element title (for above value it's "P")
+	 */
+	public String getElementTitleByKa(float Ka) {
+		String result = "", request = "SELECT ElementTitle FROM xray.elements WHERE Ka>="+(Ka-0.1)+" AND Ka<"+(Ka+0.1)+";";
+		
+		try {
+			return (String) getResult(request, 1)[0][0];
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
+		
+		return result;
 	}
 	
 	/**

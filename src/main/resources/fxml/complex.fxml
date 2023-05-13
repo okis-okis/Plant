@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -7,6 +10,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -14,6 +18,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
@@ -22,11 +27,11 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainAnchor" blendMode="DARKEN" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="754.0" prefWidth="1098.0" stylesheets="@../styles/complex.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plant.controllers.ComplexController">
+<AnchorPane fx:id="mainAnchor" blendMode="DARKEN" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1103.0" stylesheets="@../styles/complex.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plant.controllers.ComplexController">
    <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-          <Tab text="АИ">
+          <Tab text="Анализатор">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -34,19 +39,65 @@
                            <center>
                               <ScrollPane prefHeight="383.0" prefWidth="689.0" BorderPane.alignment="CENTER">
                                 <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="1089.0" style="-fx-background-color: white;">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="900.0" style="-fx-background-color: white;">
                                        <children>
-                                          <ImageView fitHeight="329.0" fitWidth="908.0" layoutX="40.0" layoutY="65.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="149.4556884765625" AnchorPane.topAnchor="65.0">
+                                          <ImageView fitHeight="329.0" fitWidth="908.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="124.21157836914062" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="181.0" AnchorPane.topAnchor="74.0">
                                              <image>
                                                 <Image url="@../images/Рентгеноспектральный%20анализ.JPG" />
                                              </image>
                                           </ImageView>
-                                          <Button fx:id="lampManageButton" layoutX="685.0" layoutY="214.0" mnemonicParsing="false" onAction="#lampManage" text="Включить">
+                                          <Button fx:id="lampManageButton" layoutX="400.0" layoutY="149.0" mnemonicParsing="false" onAction="#lampManage" text="Включить" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="149.0">
                                              <font>
                                                 <Font size="15.0" />
                                              </font>
                                           </Button>
-                                          <Rectangle fx:id="infraRedLight" arcHeight="5.0" arcWidth="5.0" height="25.0" layoutX="680.0" layoutY="307.0" stroke="WHITE" strokeMiterLimit="0.0" strokeType="OUTSIDE" strokeWidth="0.0" visible="false" width="108.0">
+                                          <Label fx:id="humidity2" layoutX="722.0" layoutY="201.0" text="nan">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="329.0" layoutY="180.0" text="φ %:">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="humidity1" layoutX="332.0" layoutY="201.0" text="nan">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="245.0" layoutY="180.0" text="t °С:">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="temperature1" layoutX="246.0" layoutY="201.0" text="nan">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="temperature2" layoutX="638.0" layoutY="201.0" text="nan">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Button layoutX="124.0" layoutY="14.0" mnemonicParsing="false" onAction="#sendToChart" text="Отправить" />
+                                          <Spinner fx:id="chartValue" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="102.0" />
+                                          <Label layoutX="636.0" layoutY="180.0" text="t °С:">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="719.0" layoutY="180.0" text="φ %:">
+                                             <font>
+                                                <Font size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <Rectangle fx:id="standardModel" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="11.0" layoutX="125.0" layoutY="234.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="74.0" />
+                                          <Button fx:id="standardManage" layoutX="6.0" layoutY="213.0" mnemonicParsing="false" onAction="#actionStandard" text="Установить эталон" />
+                                          <Button layoutX="207.0" layoutY="14.0" mnemonicParsing="false" onAction="#autoMode" text="Авто" />
+                                          <Button layoutX="259.0" layoutY="14.0" mnemonicParsing="false" onAction="#stopLineChartModeling" text="Стоп" />
+                                          <Rectangle fx:id="infraRedLight" arcHeight="5.0" arcWidth="5.0" height="16.0" stroke="WHITE" strokeMiterLimit="0.0" strokeType="OUTSIDE" strokeWidth="0.0" visible="false" width="70.0" AnchorPane.leftAnchor="409.0" AnchorPane.topAnchor="225.0">
                                              <fill>
                                                 <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.32701421800947866">
                                                    <stops>
@@ -64,48 +115,6 @@
                                                 </LinearGradient>
                                              </fill>
                                           </Rectangle>
-                                          <Label layoutX="806.0" layoutY="255.0" text="Влажность:">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="humidity2" layoutX="830.0" layoutY="276.0" text="nan">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label layoutX="551.0" layoutY="265.0" text="Влажность:">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="humidity1" layoutX="575.0" layoutY="286.0" text="nan">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label layoutX="417.0" layoutY="266.0" text="Температура:">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="temperature1" layoutX="453.0" layoutY="287.0" text="nan">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label layoutX="893.0" layoutY="256.0" text="Температура:">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="temperature2" layoutX="929.0" layoutY="277.0" text="nan">
-                                             <font>
-                                                <Font size="15.0" />
-                                             </font>
-                                          </Label>
-                                          <Button layoutX="124.0" layoutY="14.0" mnemonicParsing="false" onAction="#sendToChart" text="Отправить" />
-                                          <Spinner fx:id="chartValue" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="102.0" />
                                        </children>
                                     </AnchorPane>
                                 </content>
@@ -115,22 +124,179 @@
                               <AnchorPane fx:id="footerPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                  <children>
                                     <PieChart fx:id="piechart" prefHeight="300.0" prefWidth="300.0" title="Соотношения" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                                    <LineChart fx:id="lineChart" layoutX="121.0" layoutY="5.0" prefHeight="300.0" prefWidth="500.0" styleClass="chart-series-line" stylesheets="@../styles/lines.css" title="Основность аглошихты" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="300.0">
+                                    <VBox prefHeight="421.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <LineChart fx:id="lineChart" minHeight="200.0" prefHeight="200.0" title="Основность аглошихты">
+                                            <xAxis>
+                                              <CategoryAxis side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis autoRanging="false" lowerBound="0.5" side="LEFT" tickUnit="0.1" upperBound="4.5" />
+                                            </yAxis>
+                                          </LineChart>
+                                          <LineChart fx:id="realLineChart" prefHeight="200.0" prefWidth="500.0" styleClass="chart-series-line" stylesheets="@../styles/lines.css" title="Реальная основность аглошихты">
+                                            <xAxis>
+                                              <CategoryAxis side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis autoRanging="false" lowerBound="0.5" side="LEFT" tickUnit="0.1" upperBound="4.5" />
+                                            </yAxis>
+                                          </LineChart>
+                                       </children>
+                                    </VBox>
+                                    <BarChart fx:id="barChart" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <xAxis>
                                         <CategoryAxis side="BOTTOM" />
                                       </xAxis>
                                       <yAxis>
-                                        <NumberAxis forceZeroInRange="false" lowerBound="1.0" minorTickCount="50" side="LEFT" tickLabelGap="0.2" tickLength="5.0" tickUnit="0.0" upperBound="3.0" />
+                                        <NumberAxis side="LEFT" />
                                       </yAxis>
-                                    </LineChart>
+                                    </BarChart>
                                  </children>
                               </AnchorPane>
                            </bottom>
+                           <right>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <ScrollPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <VBox prefHeight="304.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox alignment="TOP_CENTER" prefHeight="107.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Label alignment="CENTER" minHeight="-Infinity" prefHeight="59.0" prefWidth="200.0" text="Лабораторные значения" textAlignment="CENTER" wrapText="true">
+                                                         <font>
+                                                            <Font size="19.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="8 часов" textAlignment="CENTER">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="12 часов">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="24 часа">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                </VBox>
+                                                <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="107.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Label alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" prefHeight="35.0" prefWidth="200.0" text="Реальные значения" textAlignment="CENTER">
+                                                         <font>
+                                                            <Font size="19.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="8 часов" textAlignment="CENTER">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="12 часов">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="24 часа">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                           </right>
                         </BorderPane>
                      </children>
                   </AnchorPane>
             </content>
           </Tab>
+            <Tab text="МАИ">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane layoutX="903.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <VBox alignment="TOP_CENTER" prefHeight="208.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#firstSample" text="Образец 1">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Button>
+                                    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#secondSample" text="Образец 2">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Button>
+                                    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#thirdSample" text="Образец 3">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#sendSample" text="Отправить образец" />
+                                    <Separator prefWidth="200.0">
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" top="5.0" />
+                                       </VBox.margin>
+                                    </Separator>
+                                    <Button mnemonicParsing="false" onAction="#printChart" text="Печать графика" />
+                                    <Button mnemonicParsing="false" onAction="#saveChart" text="Сохранение графика" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                        <AnchorPane fx:id="spectrumPane" layoutX="262.0" layoutY="168.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ScrollPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="907.0">
+                                       <children>
+                                          <VBox fx:id="elementsInfo" layoutX="36.0" layoutY="-14.0" prefHeight="200.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Label text="Mg (1.254 кэВ) - 0.00%" />
+                                                <Label text="Al (1.486 кэВ) - 0.00%" />
+                                                <Label text="P (2.010 кэВ) - 0.00%" />
+                                                <Label text="Mn (5.900 кэВ) - 0.00%" />
+                                                <Label text="Fe (6.405 кэВ) - 0.00%" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </ScrollPane>
+                              <AreaChart AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" fx:id="xraySpectrum">
+                                <xAxis>
+                                  <NumberAxis autoRanging="false" label="кэВ" lowerBound="1.0" minorTickCount="10" side="LEFT" tickUnit="1.0" upperBound="7.0" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis label="Кол-во импульсов" side="LEFT" upperBound="10000.0" />
+                                </yAxis>
+                              </AreaChart>
+                              <Label alignment="CENTER" layoutX="438.0" layoutY="12.0" text="Монография рентгеноспектрального излучения" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children></AnchorPane>
+              </content>
+            </Tab>
           <Tab text="Пробоподготовка">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: white;">
@@ -144,48 +310,49 @@
                                           <Image url="@../images/Пробоподготовка.JPG" />
                                        </image>
                                     </ImageView>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="91.0" layoutX="431.0" layoutY="125.0" stroke="BLACK" strokeType="INSIDE" width="10.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="10.0" layoutX="437.0" layoutY="315.0" stroke="BLACK" strokeType="INSIDE" width="82.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="9.0" layoutX="442.0" layoutY="493.0" stroke="BLACK" strokeType="INSIDE" width="82.0" />
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="10.0" layoutX="458.0" layoutY="590.0" stroke="BLACK" strokeType="INSIDE" width="51.0" />
-                                    <Label layoutX="698.0" layoutY="14.0" text="Материала нет">
+                                    <Rectangle fx:id="upperFlap" arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="10.0" layoutX="431.0" layoutY="206.0" stroke="BLACK" strokeType="INSIDE" width="96.0" />
+                                    <Rectangle fx:id="bottomFlap" arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="10.0" layoutX="437.0" layoutY="315.0" stroke="BLACK" strokeType="INSIDE" width="82.0" />
+                                    <Label layoutX="698.0" layoutY="14.0" style="-fx-background-color: LawnGreen;" text="Материала есть">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="548.0" layoutY="44.0" prefHeight="70.0" prefWidth="117.0" text="Конвейер включен" textAlignment="CENTER" wrapText="true">
+                                    <Label layoutX="529.0" layoutY="44.0" prefHeight="70.0" prefWidth="117.0" style="-fx-background-color: LawnGreen;" text="Конвейер включен" textAlignment="CENTER" wrapText="true">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
                                     </Label>
-                                    <Button layoutX="710.0" layoutY="135.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="63.0" text="Отбор">
+                                    <Button fx:id="otborManage" layoutX="710.0" layoutY="135.0" mnemonicParsing="false" onAction="#actionPPO" prefHeight="27.0" prefWidth="118.0" text="Запустить">
                                        <font>
                                           <Font size="13.0" />
                                        </font>
                                     </Button>
-                                    <Circle fill="#ff2121" layoutX="678.0" layoutY="152.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
-                                    <Label layoutX="548.0" layoutY="224.0" prefHeight="31.0" prefWidth="69.0" text="Пустой" textAlignment="CENTER" wrapText="true">
+                                    <Circle fx:id="otborStatus" fill="#ff2121" layoutX="678.0" layoutY="152.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+                                    <Label layoutX="538.0" layoutY="248.0" prefHeight="31.0" prefWidth="69.0" text="Пустой" textAlignment="CENTER" wrapText="true">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="548.0" layoutY="510.0" prefHeight="31.0" prefWidth="69.0" text="Пустой" textAlignment="CENTER" wrapText="true">
-                                       <font>
-                                          <Font size="20.0" />
-                                       </font>
-                                    </Label>
-                                    <Button layoutX="317.0" layoutY="399.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="63.0" text="Пуск">
+                                    <Button fx:id="drobManage" layoutX="317.0" layoutY="399.0" mnemonicParsing="false" onAction="#actionDrob" prefHeight="27.0" prefWidth="63.0" text="Пуск">
                                        <font>
                                           <Font size="13.0" />
                                        </font>
                                     </Button>
                                     <Line endX="43.0" endY="-90.0" layoutX="383.0" layoutY="460.0" startX="2.0" startY="-49.0" />
                                     <Line endX="123.0" endY="-6.0" layoutX="317.0" layoutY="444.0" startX="67.29290771484375" startY="-32.29290771484375" />
-                                    <Button layoutX="544.0" layoutY="645.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="63.0" text="Пуск">
+                                    <Button fx:id="conveyorManage" layoutX="544.0" layoutY="645.0" mnemonicParsing="false" onAction="#actionPLP" prefHeight="27.0" prefWidth="63.0" text="Пуск">
                                        <font>
                                           <Font size="13.0" />
                                        </font>
                                     </Button>
+                                    <Button fx:id="bunkerHeatingManage" layoutX="317.0" layoutY="251.0" mnemonicParsing="false" onAction="#actionNVB" text="Включить нагрев" />
+                                    <Label layoutX="538.0" layoutY="537.0" prefHeight="31.0" prefWidth="69.0" style="-fx-background-color: red;" text="Пустой" textAlignment="CENTER" wrapText="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Button fx:id="upperFlapManage" layoutX="332.0" layoutY="171.0" mnemonicParsing="false" onAction="#actionPVZ" text="Закрыть" />
+                                    <Button fx:id="downFlapManage" layoutX="341.0" layoutY="290.0" mnemonicParsing="false" onAction="#actionPNZ" text="Открыть" />
                                  </children>
                               </AnchorPane>
                            </content>
@@ -196,7 +363,14 @@
           </Tab>
             <Tab text="Обслуживание">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="493.0" fitWidth="969.0" layoutX="82.0" layoutY="65.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <image>
+                              <Image url="@../images/Окно%20обслуживания.JPG" />
+                           </image>
+                        </ImageView>
+                     </children></AnchorPane>
               </content>
             </Tab>
             <Tab text="ВИП">
@@ -206,7 +380,14 @@
             </Tab>
             <Tab text="Токи накала">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="539.0" fitWidth="997.0" layoutX="23.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <image>
+                              <Image url="@../images/РТ.png" />
+                           </image>
+                        </ImageView>
+                     </children></AnchorPane>
               </content>
             </Tab>
         </tabs>

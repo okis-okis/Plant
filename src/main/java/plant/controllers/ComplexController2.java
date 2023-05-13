@@ -13,13 +13,20 @@ import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
+import com.github.javafx.charts.zooming.ZoomManager;
+
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
@@ -29,6 +36,7 @@ import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -47,6 +55,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -62,7 +71,7 @@ import plant.Main;
  * @author olegk
  * @since 01.04.2023
  */
-public class ComplexController implements Initializable{
+public class ComplexController2 implements Initializable{
 	/**
 	 * Main stage
 	 * @see Stage
@@ -102,19 +111,12 @@ public class ComplexController implements Initializable{
 	 * Logical variable for stop/start complex modeling (update work)
 	 */
 	private Boolean stopModeling;
-    
+	 
     /**
      * Scrolling for average lineChart
      * @see ScrollPane
      */
     final ScrollPane scrollAveragePane = new ScrollPane();
-    
-    /**
-     * Container for scrolling and zooming for average lineChart
-     * @see StackPane
-     */
-    final StackPane averageContainer = new StackPane();
-    
     
     /**
      * Scrolling lineChart
@@ -136,12 +138,12 @@ public class ComplexController implements Initializable{
     /**
      * Auxiliary double variable for definition real average value 
      */
-    double oldValue, realOldValue, realAverage8, realAverage12, realAverage24;
+    double oldValue, realOldValue, realAverage;
     
     /**
      * Counter for definition real average value
      */
-    int realAverageCounter8, realAverageCounter12, realAverageCounter24;
+    int counter;
     
     SendingThread sendingSampleToComplex;
     
@@ -160,7 +162,7 @@ public class ComplexController implements Initializable{
      * Complex charts for real (current) and average basicity display
      * @see LineChart
      */
-	@FXML LineChart lineChart, realLineChart;
+//	@FXML LineChart averageLineChart;
 	
 	/**
 	 * Displaying the ratio of correct basicity to error
@@ -266,12 +268,11 @@ public class ComplexController implements Initializable{
 	
 	@FXML AnchorPane spectrumPane;
 	
-	XYChart.Series realStacked, labStacked;
+	@FXML VBox chartBasicityPane;
 	
-	Data labStacked8, labStacked12, labStacked24, 
-		 realStacked8, realStacked12, realStacked24;
+	@FXML AreaChart averageLineChart, realLineChart;
 	
-	PieChart.Data pieNorm, pieError;
+	XYChart.Series series;
 	
 	/**
 	 * Initialization main window and charts
@@ -286,23 +287,64 @@ public class ComplexController implements Initializable{
 		
 		chartValue.setValueFactory(valueFactory);
 		
-		realAverageCounter8= 0;
+		counter= 0;
 		
 		BarChart<String, Number> chart = new BarChart<>(new CategoryAxis(), new NumberAxis());
 		
 		//Initialization of series for line chart
 		chartLinesInit();
 		
-		lineChart.getData().addAll(realAverageLine, laboratoryLine);
-        realLineChart.getData().addAll(minLine, maxLine, realLine);
+		// defining the axes
+		//final Axis<String> xAxis = new CategoryAxis();
+		final NumberAxis xAxis = new NumberAxis();
+		final NumberAxis yAxis = new NumberAxis(0.5, 3.0, 0.5);
+		xAxis.setAutoRanging(true);
+		xAxis.setForceZeroInRange(false);
+		yAxis.setAutoRanging(true);
+		yAxis.setForceZeroInRange(false);
+		xAxis.setLabel("Основность");
+		// creating the chart
+		//final LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+		
+		lineChart.setTitle("Среднее значение основности");
+		// defining a series
+		series = new XYChart.Series();
+		series.setName("Лаборатория");
+
+		series.getData().add(new XYChart.Data(1, 23));
+		series.getData().add(new XYChart.Data(2, 14));
+		series.getData().add(new XYChart.Data(3, 15));
+		series.getData().add(new XYChart.Data(4, 24));
+		series.getData().add(new XYChart.Data(5, 34));
+		series.getData().add(new XYChart.Data(6, 36));
+		series.getData().add(new XYChart.Data(7, 22));
+		series.getData().add(new XYChart.Data(8, 45));
+		series.getData().add(new XYChart.Data(9, 43));
+		series.getData().add(new XYChart.Data(10, 17));
+		series.getData().add(new XYChart.Data(11, 29));
+		series.getData().add(new XYChart.Data(12, 25));
+		
+		StackPane pane = new StackPane();
+		pane.getChildren().add(lineChart);
+		
+		new ZoomManager(pane, lineChart, series);
+		
+		chartBasicityPane.getChildren().add(pane);
+		
+//		new ZoomManager(averageStackPane, averageLineChart, realAverageLine, laboratoryLine);
+//		
+//		new ZoomManager(realStackPane, realLineChart, maxLine, minLine, realLine);
         
+		//realLineChart.getData().addAll(minLine, maxLine, realLine);
+		
 		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			    
 	    stopModeling = false;
 	    
 	    pieChartDataInit();
 	    
-	    oldValue = -1; realAverage8 = 0;
+	    oldValue = -1; realAverage = 0;
 	    
 	    stackedInit();
 	    
@@ -330,28 +372,22 @@ public class ComplexController implements Initializable{
 	 * Initialize stacked charts 
 	 */
 	private void stackedInit() {
-		realStacked = new XYChart.Series<>();
+		XYChart.Series realStacked = new XYChart.Series<>();
 	    realStacked.setName("Реальное");  
-	    labStacked = new XYChart.Series<>();
+	    XYChart.Series labStacked = new XYChart.Series<>();
 	    labStacked.setName("Лаборатория");
 	    
-	    realStacked8 = new XYChart.Data<>("8 часов", 0.0);
-	    realStacked12 = new XYChart.Data<>("12 часов", 0.0);
-	    realStacked24 = new XYChart.Data<>("24 часов", 0.0);
-	    realStacked.getData().add(realStacked8);
-	    realStacked.getData().add(realStacked12);
-	    realStacked.getData().add(realStacked24);
+	    realStacked.getData().add(new XYChart.Data<>("8 часов", 1.7));
+	    realStacked.getData().add(new XYChart.Data<>("12 часов",1.9));
+	    realStacked.getData().add(new XYChart.Data<>("24 часа", 1.4));
 	    
-	    labStacked8 = new XYChart.Data<>("8 часов", 0.0);
-	    labStacked12 = new XYChart.Data<>("12 часов", 0.0);
-	    labStacked24 = new XYChart.Data<>("24 часов", 0.0);
-	    labStacked.getData().add(labStacked8);
-	    labStacked.getData().add(labStacked12);
-	    labStacked.getData().add(labStacked24);
+	    labStacked.getData().add(new XYChart.Data<>("8 часов", 1.5));
+	    labStacked.getData().add(new XYChart.Data<>("12 часов",1.6));
+	    labStacked.getData().add(new XYChart.Data<>("24 часа", 1.5));
 	    
 	    barChart.getData().addAll(realStacked, labStacked);
 	}
-		
+	
 	/**
 	 * Initialization of lines for line chart
 	 */
@@ -376,12 +412,9 @@ public class ComplexController implements Initializable{
 	 * Demonstration of the work of pieChart
 	 */
 	private void pieChartDataInit() {
-		
-		pieNorm = new PieChart.Data("Норма", 0);
-		pieError = new PieChart.Data("Ошибка", 0);
-		
-		ObservableList<PieChart.Data> pieChartData = 
-				FXCollections.observableArrayList(pieNorm, pieError);
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList( 
+	     		   new PieChart.Data("Норма", 83), 
+	     		   new PieChart.Data("Ошибка", 17));
 		piechart.setData(pieChartData);
 		     
 		pieChartData.get(0).getNode().setStyle("-fx-pie-color: green");
@@ -435,7 +468,7 @@ public class ComplexController implements Initializable{
 	 * @param value Number with value of point (Y-ordinate)
 	 */
 	public void addAveragePoint(String date, Number value) {
-		laboratoryLine.getData().add(new XYChart.Data(date, value));
+		series.getData().add(new XYChart.Data(date, value));
 	}
 	
 	/**
@@ -946,84 +979,51 @@ public class ComplexController implements Initializable{
 	public class AutoThread extends Thread  {
 		public void run() {
 			if(!stopModeling) {
-				realLineChart.setAnimated(false);
+				//realLineChart.setAnimated(false);
 				Platform.runLater(() -> {
-					for(int i=0;i<200;i++) {
-//					try {
-//						this.sleep(5000);
-//					} catch (InterruptedException e) {
-//						Main.getLogger().error(e.getMessage());
-//					}
-					
-					double x = (Math.random() * ((2.5 - 1.5) + 1)) + 1.5;
-					double xrounded = Math.round(x * 100.0) / 100.0;
-				        
-					realAverage8 += xrounded;
-					realAverageCounter8++;
-					
-					realAverage12 += xrounded;
-					realAverageCounter12++;
-					
-					realAverage24 += xrounded;
-					realAverageCounter24++;
-					
-					Main.getLogger().info("Point parameters: "+date.format(formatter)+" | "+xrounded);
-					addRealPoint(date.format(formatter), xrounded);
-					
-					if((date.getHour()==0||date.getHour()==8||date.getHour()==16)&&date.getMinute()==0) {
-						finishDate = date;
-						if(startDate == null) {
-							startDate = date;	
+					for(int i=0;i<100;i++) {
+						/*try {
+							this.sleep(5000);
+						} catch (InterruptedException e) {
+							Main.getLogger().error(e.getMessage());
+						}*/
+						
+						double x = (Math.random() * ((2.5 - 1.5) + 1)) + 1.5;
+						double xrounded = Math.round(x * 100.0) / 100.0;
+					        
+						realAverage += xrounded;
+						counter++;
+						
+						Main.getLogger().info("Point parameters: "+date.format(formatter)+" | "+xrounded);
+						addRealPoint(date.format(formatter), xrounded);
+						
+						if((date.getHour()==0||date.getHour()==8||date.getHour()==16)&&date.getMinute()==0) {
+							finishDate = date;
+							if(startDate == null) {
+								startDate = date;	
+							}
+							
+							if(oldValue != -1) {
+								addAveragePoint(date.format(formatter), oldValue);
+							}
+							addAveragePoint(date.format(formatter), xrounded);
+							
+							realAverage/=counter;
+							addRealAveragePoint(date.minusHours(8).format(formatter), realAverage);
+							addRealAveragePoint(date.format(formatter), realAverage);
+							
+							realAverage = 0;
+							counter = 0;
+							startDate = finishDate;
+							
+							oldValue = xrounded;
 						}
 						
-						if(oldValue != -1) {
-							addAveragePoint(date.format(formatter), oldValue);
-							labStacked8.setYValue(oldValue);
-						}
-						addAveragePoint(date.format(formatter), xrounded);
-						
-						realAverage8/=realAverageCounter8;
-						addRealAveragePoint(date.minusHours(8).format(formatter), realAverage8);
-						addRealAveragePoint(date.format(formatter), realAverage8);
-						realStacked8.setYValue(realAverage8);
-						
-						pieError.setPieValue((realAverage8-1.25)*100/realAverage8-5);
-						pieNorm.setPieValue(100-pieError.getPieValue());
-						
-						Main.getLogger().info("Norm value: "+pieNorm.getPieValue());
-						Main.getLogger().info("Error value: "+pieError.getPieValue());
-						
-						realAverage8 = 0;
-						realAverageCounter8 = 0;
-						startDate = finishDate;
-						
-						oldValue = xrounded;
-					}
-					
-					if(date.getHour()==0||date.getHour()==12) {
-						labStacked12.setYValue(oldValue);
-						
-						realAverage12/=realAverageCounter12;
-						realStacked12.setYValue(realAverage12);
-						
-						realAverage12 = 0;
-						realAverageCounter12 = 0;
-					}
-					
-					if(date.getHour()==0) {
-						labStacked24.setYValue(oldValue);
-						
-						realAverage24/=realAverageCounter24;
-						realStacked24.setYValue(realAverage24);
-						
-						realAverage24 = 0;
-						realAverageCounter24 = 0;
-					}
-					
-					date = date.plusMinutes(15);
+						date = date.plusMinutes(15);
+						//(new AutoThread()).run();
 					}
 				});
-				realLineChart.setAnimated(true);
+				//realLineChart.setAnimated(true);
 			}
 		}
 	}

@@ -80,11 +80,7 @@ public class Serial implements SerialPortDataListener {
   }
 
   @Override
-  public void serialEvent(com.fazecast.jSerialComm.SerialPortEvent event) {
-	  if(process) {
-		  process = false;
-		  result = "";
-	  }
+  public void serialEvent(com.fazecast.jSerialComm.SerialPortEvent event) {  
       if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
           return;
       }
@@ -92,34 +88,115 @@ public class Serial implements SerialPortDataListener {
       byte[] newData = new byte[serialPort.bytesAvailable()];
       int numRead = serialPort.readBytes(newData, newData.length);
       result+=new String(newData, StandardCharsets.UTF_8);
-      if(result.contains("|")) {
+      if(result.contains("|")||result.contains("#")) {
     	  result = result.replace("\n", "");
-    	  result = result.replace("|", "\n");
-    	  Main.getLogger().debug("Received data: "+result);
+    	  result = result.replace("NOP", "");
+    	  result = result.replace("|", "");
+    	  result += "\n";
+    	  Main.getLogger().info("Received data: "+result);
 	      process = true;
       }
   }
   
   public void lampTurnON() {
-	  try {
-		  sendStringToComm("L+");
-	  }catch(Exception e) {
-		  System.out.println(e);
-	  }
+	  execCommand("L+");
   }
   
   public void lampTurnOFF() {
+	  execCommand("L-");
+  }
+  
+  public void setStandard() {
+	  execCommand("Standard+");
+  }
+  
+  public void removeStandard() {
+	  execCommand("Standard-");
+  }
+  
+  private void execCommand(String command) {
 	  try {
-		  sendStringToComm("L-");
+		  sendStringToComm(command);
 	  }catch(Exception e) {
-		  System.out.println(e);
+		  Main.getLogger().info(e.getMessage());
 	  }
+  }
+  
+  public void turnOffPVZ() {
+	  execCommand("2PVZ-");
+  }
+  
+  public void turnOnPVZ() {
+	  execCommand("2PVZ+");
+  }
+  
+  public void turnOffPNZ() {
+	  execCommand("2PNZ-");
+  }
+  
+  public void turnOnPNZ() {
+	  execCommand("2PNZ+");
+  }
+  
+  public void turnOffPPO() {
+	  execCommand("2PPO-");
+  }
+  
+  public void turnOnPPO() {
+	  execCommand("2PPO+");
+  }
+  
+  public void turnOffNVB() {
+	  execCommand("2NVB-");
+  }
+  
+  public void turnOnNVB() {
+	  execCommand("2NVB+");
+  }
+  
+  public void turnOffDrob() {
+	  execCommand("2Drob-");
+  }
+  
+  public void turnOnDrob() {
+	  execCommand("2Drob+");
+  }
+  
+  public void turnOffPLP() {
+	  execCommand("2PLP-");
+  }
+  
+  public void turnOnPLP() {
+	  execCommand("2PLP+");
   }
   
   public String getResult() {
 	  String temp = result;
+	  Main.getLogger().info("Processing data: "+result);
 	  result = "";
-	  return temp;
+	  return temp.trim();
+  }
+  
+  public String generateInpulses(int channel, int count) {
+	  String command = "&";
+	  if(channel>=0&&channel<=255) {
+		  command += String.format("%03d", channel);
+	  }else {
+		  Main.getLogger().error("You have entered the wrong channel. Channel range from 0 to 255.");
+		  return "";
+	  }
+	  
+	  command += "$";
+	  
+	  if(count>=0&&count<=9999) {
+		  command += String.format("%04d", count);
+	  }else {
+		  Main.getLogger().error("You entered the wrong number of pulses. The range of number of pulses is from 0 to 999.");
+		  return "";
+	  }
+	  command+='|';
+	  
+	  return command;	  
   }
   
   public void executeCommand(String command) {

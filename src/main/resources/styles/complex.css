@@ -5,3 +5,11 @@
 	-fx-background-size: contain;
 	-fx-background-repeat: no-repeat;
 }
+
+.green-result{
+	-fx-background-color: green;
+}
+
+.red-result{
+	-fx-background-color: red;
+}

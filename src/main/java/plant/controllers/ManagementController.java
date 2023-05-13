@@ -36,9 +36,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -65,6 +65,9 @@ public class ManagementController {
 	 * @see JDesktopPane
 	 */
 	private JDesktopPane desktop;
+	
+	private Stage complexStage;
+	private Scene complexScene;
 	
 	public ManagementController() {	
 		//Init main frame
@@ -542,17 +545,22 @@ public class ManagementController {
 			    @Override
 			    public void handle(javafx.event.ActionEvent event) {
 			    	try {
-						URL complexFXML = getClass().getResource("/fxml/complex.fxml");
-						
-						Parent root = FXMLLoader.load(complexFXML);
-						
-					    Scene scene = new Scene(root);
-					    Stage stage = new Stage();
-					    
-					    stage.setTitle("Управление комплексом");
-					    stage.setScene(scene);
-					    stage.setMaximized(true);
-					    stage.show();
+			    		if(complexScene == null) {
+							URL complexFXML = getClass().getResource("/fxml/complex.fxml");
+							
+							Parent root = FXMLLoader.load(complexFXML);
+							
+						    complexScene = new Scene(root);
+						    complexStage = new Stage();
+						    
+						    complexStage.setTitle("Управление комплексом");
+						    complexStage.setScene(complexScene);
+						    complexStage.setMaximized(true);
+						    
+						    Main.setComplexScene(complexScene);
+						    Main.setComplexStage(complexStage);
+			    		}
+			    		complexStage.show();
 			    	} catch(Exception e) {
 			    		Main.getLogger().error(e.getMessage());
 					}

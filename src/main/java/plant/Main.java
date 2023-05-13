@@ -2,14 +2,16 @@ package plant;
 
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import plant.controllers.AuthorizationController;
 import plant.controllers.ComplexController;
 import plant.controllers.ManagementController;
 import plant.lib.HelpFrames;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Main extends Application {
 	/**
@@ -30,6 +32,8 @@ public class Main extends Application {
 	private static Logger logger;
 	
 	private static Serial serial;
+	
+	private static Scene complexScene;
 	
 	@Override
 	public void start(Stage primaryStage) {	
@@ -133,5 +137,13 @@ public class Main extends Application {
 
 	public static Logger getLogger() {
 		return logger;
+	}
+
+	public static Scene getComplexScene() {
+		return complexScene;
+	}
+
+	public static void setComplexScene(Scene complexScene) {
+		Main.complexScene = complexScene;
 	}
 }

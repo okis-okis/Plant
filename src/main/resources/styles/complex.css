@@ -13,3 +13,8 @@
 .red-result{
 	-fx-background-color: red;
 }
+
+.white-scroll-pane {
+   -fx-background: #FFFFFF;
+   -fx-border-color: #FFFFFF;
+}

@@ -13,6 +13,8 @@ import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
+import com.github.javafx.charts.zooming.ZoomManager;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +22,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
@@ -48,6 +51,9 @@ import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -115,7 +121,6 @@ public class ComplexController implements Initializable{
      */
     final StackPane averageContainer = new StackPane();
     
-    
     /**
      * Scrolling lineChart
      * @see ScrollPane
@@ -155,12 +160,6 @@ public class ComplexController implements Initializable{
      * Series line for lineChart
      */
     XYChart.Series sample, dataComplex;
-    
-    /**
-     * Complex charts for real (current) and average basicity display
-     * @see LineChart
-     */
-	@FXML LineChart lineChart, realLineChart;
 	
 	/**
 	 * Displaying the ratio of correct basicity to error
@@ -239,7 +238,6 @@ public class ComplexController implements Initializable{
 	 */
 	@FXML Button standardManage;
 	
-	
 	/**
 	 * Status indicator of the sampling process
 	 */
@@ -254,6 +252,20 @@ public class ComplexController implements Initializable{
 	 * Indicator of down (bottom) flap of first bunker
 	 */
 	@FXML Rectangle bottomFlap;
+	
+	@FXML Rectangle bottomFlap1;
+	
+	@FXML Rectangle upperFlap1;
+	
+	@FXML Rectangle downFlap1;
+	
+	@FXML Label VB_Status, NB_Status;
+	
+	@FXML Button upperFlapManage1;
+	
+	@FXML Button downFlapManage1;
+	
+	@FXML Button preparationMode;
 	
 	/**
 	 * Indicator of reference (standard) model
@@ -272,6 +284,14 @@ public class ComplexController implements Initializable{
 		 realStacked8, realStacked12, realStacked24;
 	
 	PieChart.Data pieNorm, pieError;
+	
+	LineChart<String, Number> averageChart;
+	
+	Stage averageStage;
+	
+	StackPane averagePane;
+	
+	PreparationAutoThread preparationThread;
 	
 	/**
 	 * Initialization main window and charts
@@ -293,8 +313,7 @@ public class ComplexController implements Initializable{
 		//Initialization of series for line chart
 		chartLinesInit();
 		
-		lineChart.getData().addAll(realAverageLine, laboratoryLine);
-        realLineChart.getData().addAll(minLine, maxLine, realLine);
+        //realLineChart.getData().addAll(minLine, maxLine, realLine);
         
 		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			    
@@ -324,6 +343,10 @@ public class ComplexController implements Initializable{
 	    
 		updateThread = new UpdateThread();
 	    updateThread.start();
+	    
+	    sendingSampleToComplex = new SendingThread();
+	    
+	    preparationThread = new PreparationAutoThread();
 	}
 	
 	/**
@@ -423,9 +446,6 @@ public class ComplexController implements Initializable{
 	public void addRealPoint(String date, Number value) {
 		realLine.getData().add(new XYChart.Data(date, value));
 		
-		minLine.getData().add(new XYChart.Data(date, 1.5));
-		maxLine.getData().add(new XYChart.Data(date, 2.5));
-		
 		Main.getLogger().info("Point was added to real line");
 	}
 	
@@ -466,6 +486,34 @@ public class ComplexController implements Initializable{
 	}
 	
 	/**
+	 * Show charts with basicity
+	 * @param event
+	 */
+	public void showCharts(ActionEvent event) {
+		
+		averageStage = new Stage();
+		averageStage.setTitle("Среднее значение основности");
+			
+		// defining the axes
+		final CategoryAxis xAxis = new CategoryAxis();
+		final NumberAxis yAxis = new NumberAxis(0.5, 2.5, 0.1);
+		yAxis.setAutoRanging(true);
+		yAxis.setForceZeroInRange(false);
+		xAxis.setLabel("Дата и время");
+		yAxis.setLabel("Импульсы");
+		// creating the chart
+		averageChart = new LineChart<String, Number>(xAxis, yAxis);
+		averagePane = new StackPane();
+		averagePane.getChildren().add(averageChart);
+		final Scene scene = new Scene(averagePane, 500, 400);
+		averageStage.setScene(scene);
+			
+		new ZoomManager(averagePane, averageChart, realAverageLine, laboratoryLine);
+			
+		averageStage.show();
+	}
+	
+	/**
 	 * Setting temperature from first sensor on modeling window
 	 * @param temperature String with temperature value
 	 */
@@ -501,6 +549,7 @@ public class ComplexController implements Initializable{
 	 * Action for control of top flap driver 
 	 */
 	public void actionPVZ() {
+		stopUpdateThread();
 		if(upperFlapManage.getText().equals("Открыть")){
 			Main.getSerial().turnOnPVZ();
 			Main.getLogger().info("The upper flap is open");
@@ -522,6 +571,7 @@ public class ComplexController implements Initializable{
 	 * Action for control of bottom flap driver 
 	 */
 	public void actionPNZ() {
+		stopUpdateThread();
 		if(downFlapManage.getText().equals("Открыть")){
 			Main.getSerial().turnOnPNZ();
 			Main.getLogger().info("The down flap is open");
@@ -539,6 +589,7 @@ public class ComplexController implements Initializable{
 	 * Action for control of sampler drive
 	 */
 	public void actionPPO() {
+		stopUpdateThread();
 		if(otborManage.getText().equals("Запустить")){
 			Main.getSerial().turnOnPPO();
 			Main.getLogger().info("Starting sampling");
@@ -556,6 +607,7 @@ public class ComplexController implements Initializable{
 	 * Action for control of top bunker heating 
 	 */
 	public void actionNVB() {
+		stopUpdateThread();
 		if(bunkerHeatingManage.getText().equals("Включить нагрев")){
 			Main.getSerial().turnOnNVB();
 			bunkerHeatingManage.setText("Выключить нагрев");
@@ -570,7 +622,8 @@ public class ComplexController implements Initializable{
 	/**
 	 * Action for control of crusher
 	 */
-	public void actionDrob() {				
+	public void actionDrob() {
+		stopUpdateThread();			
 		if(drobManage.getText().equals("Пуск")){
 			Main.getSerial().turnOnDrob();
 			Main.getLogger().info("Starting the crusher");
@@ -586,6 +639,7 @@ public class ComplexController implements Initializable{
 	 * Sample conveyor belt drive
 	 */
 	public void actionPLP() {
+		stopUpdateThread();
 		if(conveyorManage.getText().equals("Пуск")){
 			Main.getSerial().turnOnPLP();
 			Main.getLogger().info("Starting the conveyor");
@@ -761,7 +815,212 @@ public class ComplexController implements Initializable{
 	public void setStage(Stage stage) {
 		this.stage = stage;
 	}
-
+	
+	public void preparationModeManage() {
+		if(preparationMode.getText().contains("Авто")) {
+			preparationMode.setText("Ручной режим");
+			preparationThread.start();
+		}else {
+			preparationThread.stop();
+			preparationMode.setText("Авто режим");
+		}
+	}
+	
+	public void setUpperBunkerStatus(String status) {
+		int statusNumber = 0;
+		
+		try {
+			statusNumber = Integer.parseInt(status);
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
+		
+		if(status.contains("Полный")) {
+			VB_Status.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+		}else if(statusNumber>0&&statusNumber<=80) {
+			status+="%";
+			VB_Status.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+		}else {
+			VB_Status.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+		}
+		VB_Status.setText(status);
+	}
+	
+	public void setDownBunkerStatus(String status) {
+		int statusNumber = 0;
+		
+		try {
+			statusNumber = Integer.parseInt(status);
+		}catch(Exception e) {
+			Main.getLogger().error(e.getMessage());
+		}
+		
+		if(status.contains("Полный")) {
+			NB_Status.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+		}else if(statusNumber>0&&statusNumber<=80) {
+			status+="%";
+			NB_Status.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+		}else {
+			NB_Status.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+		}
+		NB_Status.setText(status);
+	}
+	
+	public void actionPVZ1() {
+		stopUpdateThread();
+		if(upperFlapManage1.getText().equals("Открыть")){
+			Main.getLogger().info("The upper flap of down bunker is open");
+			upperFlapManage1.setText("Закрыть");
+			upperFlap1.setWidth(10);
+		}else {
+			Main.getLogger().info("The upper flap of down bunker is close");
+			upperFlapManage1.setText("Открыть");
+			upperFlap1.setWidth(85);
+		}
+	}
+	
+	public void actionPNZ1() {
+		stopUpdateThread();
+		if(downFlapManage1.getText().equals("Открыть")){
+			Main.getLogger().info("The down flap of down bunker is open");
+			downFlapManage1.setText("Закрыть");
+			downFlap1.setWidth(10);
+		}else {
+			Main.getLogger().info("The down flap of down bunker is close");
+			downFlapManage1.setText("Открыть");
+			downFlap1.setWidth(60);
+		}
+	}
+	
+	private void stopUpdateThread() {
+		updateThread.stop=true;
+		try {
+	    	updateThread.stop();
+	    }catch(Exception e) {
+	    	Main.getLogger().info(e.getMessage());
+	    }
+		
+	}
+	
+	int volume;
+	
+	public class PreparationAutoThread extends Thread{
+		public void run() {
+			for(int counter = 0; counter<5; counter++) {
+				initPreparationSystem();
+				pause(5);
+				
+				Platform.runLater(new Runnable() {
+	                @Override public void run() {
+						//Open upper flap of upper bunker
+						actionPVZ();
+	                }
+	            });
+				
+						pause(1);
+						
+				Platform.runLater(new Runnable() {
+			        @Override public void run() {
+						//Start sampling
+						actionPPO();
+					}
+		        });		
+						
+				for(volume=1;volume<=4;volume++) {
+					Platform.runLater(new Runnable() {
+						@Override public void run() {
+							setUpperBunkerStatus(String.valueOf(volume*20));
+					    }
+					});		
+					pause(2);
+				}
+				
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						//Close upper flap of upper bunker
+						actionPVZ();
+						setUpperBunkerStatus("Полный");
+					}
+				});
+						
+				pause(1);
+				
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						//Start heating of the upper bunker
+						actionNVB();
+					}
+				});
+				
+				pause(2);
+						
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						actionNVB();
+						//Start crushing
+						actionDrob();
+					}
+				});		
+				
+				pause(1);
+						
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						//Open bottom flap of upper bunker
+						actionPNZ();
+					}
+				});
+	               
+				pause(1);
+			}
+		}
+		
+		public void pause(int seconds) {
+			try {
+				sleep(seconds*1000);
+			} catch (InterruptedException e) {
+				Main.getLogger().error(e.getMessage());
+			}
+		}
+		
+		public void initPreparationSystem() {
+			Platform.runLater(new Runnable() {
+                @Override public void run() {
+					setUpperBunkerStatus("Пусто");
+					setDownBunkerStatus("Пусто");
+					
+					if(otborManage.getText().contains("Остановить")) {
+						actionPPO();
+					}
+					
+					if(upperFlapManage.getText().contains("Закрыть")) {
+						actionPVZ();
+					}
+					
+					if(downFlapManage.getText().contains("Закрыть")) {
+						actionPNZ();
+					}
+					
+					if(downFlapManage.getText().contains("Стоп")) {
+						actionDrob();
+					}
+					
+					if(upperFlapManage1.getText().contains("Закрыть")) {
+						actionPVZ1();
+					}
+					
+					if(downFlapManage1.getText().contains("Закрыть")) {
+						actionPVZ1();
+					}
+					
+					if(conveyorManage.getText().contains("Стоп")) {
+						actionPLP();
+					}
+                }
+            });
+		}
+	}
+	
 	/**
 	 * Thread for update data on modeling window
 	 * @author olegk
@@ -782,7 +1041,7 @@ public class ComplexController implements Initializable{
 						    
 						Platform.runLater(() -> {
 						 	try {
-						   		setHumidity1(arr[0].isEmpty()?"nan":arr[0]);
+						   		setHumidity1(arr[0].isEmpty()||arr[0].length()>5?"nan":arr[0]);
 						   	}catch(Exception e) {
 						   		setHumidity1("nan");
 						   	}
@@ -843,7 +1102,7 @@ public class ComplexController implements Initializable{
 		String result;
 		  public void run(Boolean mode) {
 			try {	
-				
+				updateThread.stop=true;
 				try {
 			    	updateThread.stop();
 			    }catch(Exception e) {
@@ -902,6 +1161,7 @@ public class ComplexController implements Initializable{
 		String result;
 		  public void run(Boolean mode) {
 			try {	
+				updateThread.stop=true;
 				try {
 			    	updateThread.stop();
 			    }catch(Exception e) {
@@ -946,7 +1206,7 @@ public class ComplexController implements Initializable{
 	public class AutoThread extends Thread  {
 		public void run() {
 			if(!stopModeling) {
-				realLineChart.setAnimated(false);
+				//realLineChart.setAnimated(false);
 				Platform.runLater(() -> {
 					for(int i=0;i<200;i++) {
 //					try {
@@ -1023,7 +1283,7 @@ public class ComplexController implements Initializable{
 					date = date.plusMinutes(15);
 					}
 				});
-				realLineChart.setAnimated(true);
+				//realLineChart.setAnimated(true);
 			}
 		}
 	}

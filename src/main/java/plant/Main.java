@@ -42,8 +42,6 @@ public class Main extends Application {
 		//Init variable for working with database
 		db = new DB();
 		
-		//JFrame f = db.createUI();
-		
 		//Try to open connection with database
 		if(!db.openConnection()) {
 			JOptionPane.showMessageDialog(null,"Ошибка соединения с БД","Ошибка!",1);
@@ -65,7 +63,6 @@ public class Main extends Application {
 	        	return;
 	        }
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

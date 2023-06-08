@@ -4,7 +4,6 @@
 <?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
@@ -27,7 +26,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainAnchor" blendMode="DARKEN" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1103.0" stylesheets="@../styles/complex.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plant.controllers.ComplexController">
+<AnchorPane fx:id="mainAnchor" blendMode="DARKEN" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1288.0" stylesheets="@../styles/complex.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plant.controllers.ComplexController">
    <children>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -37,9 +36,9 @@
                      <children>
                         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <center>
-                              <ScrollPane prefHeight="383.0" prefWidth="689.0" BorderPane.alignment="CENTER">
+                              <ScrollPane prefHeight="383.0" prefWidth="689.0" styleClass="white-scroll-pane" BorderPane.alignment="CENTER">
                                 <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="431.0" prefWidth="900.0" style="-fx-background-color: white;">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="449.0" prefWidth="925.0" style="-fx-background-color: white;">
                                        <children>
                                           <ImageView fitHeight="329.0" fitWidth="908.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="124.21157836914062" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="181.0" AnchorPane.topAnchor="74.0">
                                              <image>
@@ -96,7 +95,6 @@
                                           <Rectangle fx:id="standardModel" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="11.0" layoutX="125.0" layoutY="234.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="74.0" />
                                           <Button fx:id="standardManage" layoutX="6.0" layoutY="213.0" mnemonicParsing="false" onAction="#actionStandard" text="Установить эталон" />
                                           <Button layoutX="207.0" layoutY="14.0" mnemonicParsing="false" onAction="#autoMode" text="Авто" />
-                                          <Button layoutX="259.0" layoutY="14.0" mnemonicParsing="false" onAction="#stopLineChartModeling" text="Стоп" />
                                           <Rectangle fx:id="infraRedLight" arcHeight="5.0" arcWidth="5.0" height="16.0" stroke="WHITE" strokeMiterLimit="0.0" strokeType="OUTSIDE" strokeWidth="0.0" visible="false" width="70.0" AnchorPane.leftAnchor="409.0" AnchorPane.topAnchor="225.0">
                                              <fill>
                                                 <LinearGradient endX="1.0" endY="1.0" startX="1.0" startY="0.32701421800947866">
@@ -115,101 +113,28 @@
                                                 </LinearGradient>
                                              </fill>
                                           </Rectangle>
+                                          <Button layoutX="292.0" layoutY="1.0" mnemonicParsing="false" onAction="#showCharts" prefHeight="51.0" prefWidth="152.0" text="График среднего значения основности" textAlignment="CENTER" wrapText="true" />
                                        </children>
                                     </AnchorPane>
                                 </content>
                               </ScrollPane>
                            </center>
-                           <bottom>
-                              <AnchorPane fx:id="footerPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <PieChart fx:id="piechart" prefHeight="300.0" prefWidth="300.0" title="Соотношения" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                                    <VBox prefHeight="421.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <LineChart fx:id="lineChart" minHeight="200.0" prefHeight="200.0" title="Основность аглошихты">
-                                            <xAxis>
-                                              <CategoryAxis side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                              <NumberAxis autoRanging="false" lowerBound="0.5" side="LEFT" tickUnit="0.1" upperBound="4.5" />
-                                            </yAxis>
-                                          </LineChart>
-                                          <LineChart fx:id="realLineChart" prefHeight="200.0" prefWidth="500.0" styleClass="chart-series-line" stylesheets="@../styles/lines.css" title="Реальная основность аглошихты">
-                                            <xAxis>
-                                              <CategoryAxis side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                              <NumberAxis autoRanging="false" lowerBound="0.5" side="LEFT" tickUnit="0.1" upperBound="4.5" />
-                                            </yAxis>
-                                          </LineChart>
-                                       </children>
-                                    </VBox>
-                                    <BarChart fx:id="barChart" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                      <xAxis>
-                                        <CategoryAxis side="BOTTOM" />
-                                      </xAxis>
-                                      <yAxis>
-                                        <NumberAxis side="LEFT" />
-                                      </yAxis>
-                                    </BarChart>
-                                 </children>
-                              </AnchorPane>
-                           </bottom>
                            <right>
-                              <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                              <AnchorPane prefHeight="500.0" prefWidth="300.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <ScrollPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <ScrollPane prefHeight="500.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
-                                          <VBox prefHeight="304.0" prefWidth="200.0">
+                                          <VBox prefHeight="500.0" prefWidth="300.0">
                                              <children>
-                                                <VBox alignment="TOP_CENTER" prefHeight="107.0" prefWidth="200.0">
-                                                   <children>
-                                                      <Label alignment="CENTER" minHeight="-Infinity" prefHeight="59.0" prefWidth="200.0" text="Лабораторные значения" textAlignment="CENTER" wrapText="true">
-                                                         <font>
-                                                            <Font size="19.0" />
-                                                         </font>
-                                                      </Label>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="8 часов" textAlignment="CENTER">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="12 часов">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="24 часа">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                   </children>
-                                                </VBox>
-                                                <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="107.0" prefWidth="200.0">
-                                                   <children>
-                                                      <Label alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" prefHeight="35.0" prefWidth="200.0" text="Реальные значения" textAlignment="CENTER">
-                                                         <font>
-                                                            <Font size="19.0" />
-                                                         </font>
-                                                      </Label>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="8 часов" textAlignment="CENTER">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="12 часов">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="24 часа">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
-                                                      </Button>
-                                                   </children>
-                                                </VBox>
+                                                <BarChart fx:id="barChart" prefHeight="200.0" prefWidth="300.0">
+                                                  <xAxis>
+                                                    <CategoryAxis side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis side="LEFT" />
+                                                  </yAxis>
+                                                </BarChart>
+                                                <PieChart fx:id="piechart" prefHeight="300.0" prefWidth="300.0" title="Соотношения" />
                                              </children>
                                           </VBox>
                                        </content>
@@ -301,7 +226,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: white;">
                      <children>
-                        <ScrollPane layoutX="173.0" layoutY="286.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ScrollPane layoutX="173.0" layoutY="286.0" prefHeight="200.0" prefWidth="200.0" styleClass="white-scroll-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
                                  <children>
@@ -328,11 +253,6 @@
                                        </font>
                                     </Button>
                                     <Circle fx:id="otborStatus" fill="#ff2121" layoutX="678.0" layoutY="152.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
-                                    <Label layoutX="538.0" layoutY="248.0" prefHeight="31.0" prefWidth="69.0" text="Пустой" textAlignment="CENTER" wrapText="true">
-                                       <font>
-                                          <Font size="20.0" />
-                                       </font>
-                                    </Label>
                                     <Button fx:id="drobManage" layoutX="317.0" layoutY="399.0" mnemonicParsing="false" onAction="#actionDrob" prefHeight="27.0" prefWidth="63.0" text="Пуск">
                                        <font>
                                           <Font size="13.0" />
@@ -346,13 +266,23 @@
                                        </font>
                                     </Button>
                                     <Button fx:id="bunkerHeatingManage" layoutX="317.0" layoutY="251.0" mnemonicParsing="false" onAction="#actionNVB" text="Включить нагрев" />
-                                    <Label layoutX="538.0" layoutY="537.0" prefHeight="31.0" prefWidth="69.0" style="-fx-background-color: red;" text="Пустой" textAlignment="CENTER" wrapText="true">
+                                    <Label fx:id="NB_Status" layoutX="538.0" layoutY="537.0" prefHeight="31.0" prefWidth="89.0" style="-fx-background-color: red;" text="None" textAlignment="CENTER" wrapText="true">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
                                     </Label>
-                                    <Button fx:id="upperFlapManage" layoutX="332.0" layoutY="171.0" mnemonicParsing="false" onAction="#actionPVZ" text="Закрыть" />
-                                    <Button fx:id="downFlapManage" layoutX="341.0" layoutY="290.0" mnemonicParsing="false" onAction="#actionPNZ" text="Открыть" />
+                                    <Button fx:id="upperFlapManage" layoutX="332.0" layoutY="171.0" mnemonicParsing="false" onAction="#actionPVZ" text="Открыть" />
+                                    <Button fx:id="downFlapManage" layoutX="353.0" layoutY="308.0" mnemonicParsing="false" onAction="#actionPNZ" text="Открыть" />
+                                    <Rectangle fx:id="upperFlap1" arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="9.0" layoutX="437.0" layoutY="494.0" stroke="BLACK" strokeType="INSIDE" width="86.0" />
+                                    <Rectangle fx:id="downFlap1" arcHeight="5.0" arcWidth="5.0" fill="#341fff" height="9.0" layoutX="451.0" layoutY="591.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
+                                    <Button fx:id="upperFlapManage1" layoutX="353.0" layoutY="486.0" mnemonicParsing="false" onAction="#actionPVZ1" text="Открыть" />
+                                    <Button fx:id="downFlapManage1" layoutX="379.0" layoutY="579.0" mnemonicParsing="false" onAction="#actionPNZ1" text="Открыть" />
+                                    <Label fx:id="VB_Status" layoutX="538.0" layoutY="261.0" prefHeight="31.0" prefWidth="90.0" style="-fx-background-color: red;" text="None" textAlignment="CENTER" wrapText="true">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Button fx:id="preparationMode" layoutX="22.0" layoutY="14.0" mnemonicParsing="false" onAction="#preparationModeManage" text="Авто режим" />
                                  </children>
                               </AnchorPane>
                            </content>
